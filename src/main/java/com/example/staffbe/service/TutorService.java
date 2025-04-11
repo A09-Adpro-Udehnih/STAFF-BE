@@ -3,11 +3,14 @@ package com.example.staffbe.service;
 import com.example.staffbe.model.ApplicationStatus;
 import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.repository.TutorRepository;
+import com.example.staffbe.strategy.ApprovalStrategy;
+import com.example.staffbe.strategy.TutorApprovalStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TutorService {
@@ -32,14 +35,16 @@ public class TutorService {
 
     public void approveTutor(UUID tutorId) {
         tutorRepository.findById(tutorId).ifPresent(application -> {
-            application.approveApplication();
+            ApprovalStrategy strategy = new TutorApprovalStrategy(application);
+            strategy.approve();
             tutorRepository.save(application);
         });
     }
 
     public void rejectTutor(UUID tutorId) {
         tutorRepository.findById(tutorId).ifPresent(application -> {
-            application.rejectApplication();
+            ApprovalStrategy strategy = new TutorApprovalStrategy(application);
+            strategy.reject();
             tutorRepository.save(application);
         });
     }
