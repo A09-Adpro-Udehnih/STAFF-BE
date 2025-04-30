@@ -1,7 +1,7 @@
-package com.example.staffbe.model;
+// package com.example.staffbe.model;
 
-public enum ApplicationStatus {
-    PENDING,
-    APPROVED,
-    REJECTED
-}
+// public enum ApplicationStatus {
+//     PENDING,
+//     APPROVED,
+//     REJECTED
+// }

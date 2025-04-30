@@ -1,7 +1,7 @@
-package com.example.staffbe.model;
+// package com.example.staffbe.model;
 
-public enum RefundStatus {
-    PENDING,
-    ACCEPTED,
-    REJECTED
-}
+// public enum RefundStatus {
+//     PENDING,
+//     ACCEPTED,
+//     REJECTED
+// }

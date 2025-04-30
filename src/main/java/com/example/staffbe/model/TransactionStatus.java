@@ -1,7 +1,7 @@
-package com.example.staffbe.model;
+// package com.example.staffbe.model;
 
-public enum TransactionStatus {
-    PENDING,
-    PAID,
-    FAILED
-}
+// public enum TransactionStatus {
+//     PENDING,
+//     PAID,
+//     FAILED
+// }
