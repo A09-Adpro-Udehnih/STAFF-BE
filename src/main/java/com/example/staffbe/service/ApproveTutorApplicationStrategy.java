@@ -1,0 +1,36 @@
+package com.example.staffbe.service;
+
+import com.example.staffbe.model.TutorApplication;
+import com.example.staffbe.repository.TutorApplicationRepository;
+import com.example.staffbe.enums.TutorApplicationStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
+
+@Component
+public class ApproveTutorApplicationStrategy implements ApprovalStrategy {
+
+    private final TutorApplicationRepository tutorApplicationRepository;
+    private final TutorApplicationServiceImpl tutorApplicationServiceImpl;
+
+    @Autowired
+    public ApproveTutorApplicationStrategy(TutorApplicationRepository tutorApplicationRepository,TutorApplicationServiceImpl tutorApplicationserviceImpl) {
+        this.tutorApplicationRepository = tutorApplicationRepository;
+        this.tutorApplicationServiceImpl = tutorApplicationserviceImpl;
+    }
+
+    @Override
+    public void approve(UUID applicationId) {
+        TutorApplication tutorApplication = tutorApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Tutor application not found"));
+
+        tutorApplicationServiceImpl.approveApplication(applicationId);  // Menyetujui aplikasi tutor
+        tutorApplicationRepository.save(tutorApplication);  // Simpan status yang telah diperbarui
+    }
+
+    @Override
+    public void reject(UUID applicationId) {
+        throw new UnsupportedOperationException("Reject operation is not supported for approve strategy");
+    }
+}
