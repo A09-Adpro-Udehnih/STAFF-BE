@@ -16,7 +16,7 @@ public class RefundModelTest {
         Refund refund = Refund.builder()
                 .id(UUID.randomUUID())
                 .payment(mock(Payment.class))
-                .amount(new BigDecimal("100.00"))
+                .amount(100)
                 .reason("Testing default status")
                 .build();
 
@@ -31,7 +31,7 @@ public class RefundModelTest {
         Refund refund = Refund.builder()
                 .id(UUID.randomUUID())
                 .payment(mock(Payment.class))
-                .amount(new BigDecimal("150.00"))
+                .amount(150)
                 .reason("Refund approved manually")
                 .status(RefundStatus.ACCEPTED)
                 .build();

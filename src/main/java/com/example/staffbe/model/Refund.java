@@ -29,7 +29,7 @@ public class Refund {
     private Payment payment;
 
     @Column(nullable = false)
-    private BigDecimal amount;
+    private double amount;
 
     @Enumerated(EnumType.STRING)  // Menambahkan enum untuk status
     @Column(nullable = false)

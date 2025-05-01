@@ -47,7 +47,7 @@ public class RefundRepositoryTest {
         Refund refund = Refund.builder()
                 .id(refundId)
                 .payment(payment)
-                .amount(new BigDecimal("250.00"))
+                .amount(250)
                 .status(RefundStatus.ACCEPTED)
                 .reason("Test case")
                 .createdAt(LocalDateTime.now())
@@ -69,7 +69,7 @@ public class RefundRepositoryTest {
         Refund r1 = Refund.builder()
                 .id(UUID.randomUUID())
                 .payment(payment)
-                .amount(new BigDecimal("100.00"))
+                .amount(100)
                 .status(RefundStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -77,7 +77,7 @@ public class RefundRepositoryTest {
         Refund r2 = Refund.builder()
                 .id(UUID.randomUUID())
                 .payment(payment)
-                .amount(new BigDecimal("200.00"))
+                .amount(200)
                 .status(RefundStatus.REJECTED)
                 .createdAt(LocalDateTime.now())
                 .build();
