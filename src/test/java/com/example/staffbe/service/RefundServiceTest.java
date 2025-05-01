@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.staffbe.enums.PaymentStatus;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -70,7 +69,7 @@ public class RefundServiceTest {
         // Verifikasi status refund telah diperbarui menjadi ACCEPTED
         assertEquals(RefundStatus.ACCEPTED, testRefund.getStatus());
         // Verifikasi status payment telah diperbarui menjadi PAID
-        assertEquals(com.example.staffbe.enums.PaymentStatus.PAID, testPayment.getStatus());
+        assertEquals(PaymentStatus.PAID, testPayment.getStatus());
     }
 
     @Test
