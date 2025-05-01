@@ -10,7 +10,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.example.staffbe.enums.PaymentStatus;
+import com.example.staffbe.enums.RefundStatus;
+import com.example.staffbe.model.Payment;
 
 @Data
 @Entity
@@ -28,11 +29,11 @@ public class Refund {
     private Payment payment;
 
     @Column(nullable = false)
-    private BigDecimal amount;
+    private double amount;
 
     @Enumerated(EnumType.STRING)  // Menambahkan enum untuk status
     @Column(nullable = false)
-    private PaymentStatus status;
+    private RefundStatus status;
 
     @Column
     private String reason;
@@ -46,7 +47,7 @@ public class Refund {
             this.createdAt = LocalDateTime.now();
         }
         if (this.status == null) {
-            this.status = PaymentStatus.PENDING;  // Set default status jika tidak ada
+            this.status = RefundStatus.PENDING;  // Set default status jika tidak ada
         }
     }
 }
