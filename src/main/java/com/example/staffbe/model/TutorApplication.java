@@ -17,6 +17,5 @@
 //     }
 
 //     public void rejectApplication() {
-//         this.status = ApplicationStatus.REJECTED;
-//     }
+//         this.status = ApplicationStatus.REJECTED;//     }
 // }
