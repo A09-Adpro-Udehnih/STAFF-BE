@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS refunds (
     payment_id UUID NOT NULL REFERENCES payments(id),
     amount NUMERIC(12, 2) NOT NULL,
     reason TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(10) DEFAULT 'PENDING'
 );
