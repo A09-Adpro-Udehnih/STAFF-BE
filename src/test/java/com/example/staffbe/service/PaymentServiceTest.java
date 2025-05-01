@@ -1,58 +1,80 @@
-//package com.example.staffbe.service;
-//
-//import com.example.staffbe.model.Transaction;
-//import com.example.staffbe.model.TransactionStatus;
-//import com.example.staffbe.repository.TransactionRepository;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//
-//import java.util.Optional;
-//import java.util.UUID;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.mockito.Mockito.*;
-//
-//@org.junit.jupiter.api.extension.ExtendWith(MockitoExtension.class)
-//class PaymentServiceTest {
-//
-//    @Mock
-//    private TransactionRepository transactionRepository;
-//
-//    @InjectMocks
-//    private PaymentService paymentService;
-//
-//    private UUID transactionId;
-//    private Transaction transaction;
-//
-//    @BeforeEach
-//    void setUp() {
-//        transactionId = UUID.randomUUID();
-//        transaction = new Transaction();
-//        transaction.setId(transactionId);
-//        transaction.setStatus(TransactionStatus.PENDING);
-//        transaction.setAmount(300.0);
-//    }
-//
-//    @Test
-//    void updateTransactionStatus_shouldSetStatusToPaid() {
-//        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
-//
-//        paymentService.updateTransactionStatus(transactionId, TransactionStatus.PAID);
-//
-//        assertThat(transaction.getStatus()).isEqualTo(TransactionStatus.PAID);
-//        verify(transactionRepository).save(transaction);
-//    }
-//
-//    @Test
-//    void updateTransactionStatus_shouldSetStatusToFailed_whenStatusIsNotPaid() {
-//        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
-//
-//        paymentService.updateTransactionStatus(transactionId, TransactionStatus.FAILED);
-//
-//        assertThat(transaction.getStatus()).isEqualTo(TransactionStatus.FAILED);
-//        verify(transactionRepository).save(transaction);
-//    }
-//}
+package com.example.staffbe.service;
+
+import com.example.staffbe.model.Payment;
+import com.example.staffbe.enums.PaymentMethod;
+import com.example.staffbe.enums.PaymentStatus;
+import com.example.staffbe.repository.PaymentRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class PaymentServiceTest {
+
+    @Mock
+    private PaymentRepository paymentRepository;
+
+    @InjectMocks
+    private PaymentServiceImpl paymentService;
+
+    private Payment testPayment;
+
+    @BeforeEach
+    void setUp() {
+        testPayment = Payment.builder()
+                .id(UUID.randomUUID())
+                .userId("user-123")
+                .amount(100.0)
+                .method(PaymentMethod.BANK_TRANSFER)
+                .status(PaymentStatus.PENDING)
+                .paymentReference("ref-123")
+                .createdAt(java.time.LocalDateTime.now())
+                .build();
+    }
+
+    @Test
+    void testGetAllPayments() {
+        // Simulasi pengembalian data pembayaran dari repository
+        when(paymentRepository.findAll()).thenReturn(List.of(testPayment));
+
+        List<Payment> payments = paymentService.getAllPayments();
+
+        assertNotNull(payments);
+        assertFalse(payments.isEmpty());
+        assertEquals(1, payments.size());
+        assertEquals(testPayment, payments.get(0));
+    }
+
+    @Test
+    void testUpdatePaymentStatus_Success() {
+        // Simulasi pengembalian data pembayaran berdasarkan ID
+        when(paymentRepository.findById(testPayment.getId())).thenReturn(Optional.of(testPayment));
+
+        int rowsUpdated = paymentService.updatePaymentStatus(testPayment.getId(), PaymentStatus.PAID);
+
+        // Verifikasi jika status berhasil diperbarui
+        assertEquals(1, rowsUpdated);  // Pastikan 1 baris terpengaruh
+        assertEquals(PaymentStatus.PAID, testPayment.getStatus());  // Pastikan status berubah
+    }
+
+    @Test
+    void testUpdatePaymentStatus_NotFound() {
+        // Simulasi ketika pembayaran tidak ditemukan di repository
+        when(paymentRepository.findById(testPayment.getId())).thenReturn(Optional.empty());
+
+        int rowsUpdated = paymentService.updatePaymentStatus(testPayment.getId(), PaymentStatus.PAID);
+
+        // Verifikasi bahwa status tidak diperbarui karena pembayaran tidak ditemukan
+        assertEquals(0, rowsUpdated);  // 0 berarti pembayaran tidak ditemukan
+    }
+}
