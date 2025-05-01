@@ -59,4 +59,15 @@ public class UserServiceTest {
 
         assertFalse(retrievedUser.isPresent()); // Pastikan user tidak ditemukan
     }
+
+    @Test
+    void testUpdateUserRole() {
+        // Simulasi repository untuk mengembalikan user saat findById dipanggil
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
+
+        int result = userService.updateUserRole(testUser.getId(), Role.TUTOR);
+
+        assertEquals(1, result); // Pastikan update berhasil
+        assertEquals(Role.TUTOR, testUser.getRole()); // Pastikan role diperbarui
+    }
 }
