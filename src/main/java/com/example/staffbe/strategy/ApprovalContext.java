@@ -1,4 +1,4 @@
-package com.example.staffbe.service;
+package com.example.staffbe.strategy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

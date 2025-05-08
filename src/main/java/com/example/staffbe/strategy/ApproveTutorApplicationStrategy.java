@@ -1,7 +1,8 @@
-package com.example.staffbe.service;
+package com.example.staffbe.strategy;
 
 import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.repository.TutorApplicationRepository;
+import com.example.staffbe.service.TutorApplicationServiceImpl;
 import com.example.staffbe.enums.TutorApplicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

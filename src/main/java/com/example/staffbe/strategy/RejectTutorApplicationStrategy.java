@@ -1,4 +1,4 @@
-package com.example.staffbe.service;
+package com.example.staffbe.strategy;
 
 import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.repository.TutorApplicationRepository;

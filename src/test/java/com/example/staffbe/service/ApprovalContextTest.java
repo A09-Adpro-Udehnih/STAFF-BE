@@ -9,6 +9,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 
+import com.example.staffbe.strategy.ApprovalContext;
+import com.example.staffbe.strategy.ApproveRefundStrategy;
+import com.example.staffbe.strategy.ApproveTutorApplicationStrategy;
+import com.example.staffbe.strategy.RejectRefundStrategy;
+import com.example.staffbe.strategy.RejectTutorApplicationStrategy;
+
 class ApprovalContextTest {
 
     @Mock
