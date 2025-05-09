@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class PaymentStrategy implements GetAllStrategy<Payment> {
+public class GetAllPaymentStrategy implements GetAllStrategy<Payment> {
 
     private final PaymentRepository paymentRepository;
 
     @Autowired
-    public PaymentStrategy(PaymentRepository paymentRepository) {
+    public GetAllPaymentStrategy(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
     }
 

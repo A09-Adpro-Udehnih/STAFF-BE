@@ -1,21 +1,25 @@
-package com.example.staffbe.strategy;
+package com.example.staffbe.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.staffbe.strategy.GetAllPaymentStrategy;
+import com.example.staffbe.strategy.GetAllRefundStrategy;
+import com.example.staffbe.strategy.GetAllTutorApplicationStrategy;
+
 @Service
 public class ResourceService {
 
-    private final RefundStrategy refundStrategy;
-    private final TutorApplicationStrategy tutorApplicationStrategy;
-    private final PaymentStrategy paymentStrategy;
+    private final GetAllRefundStrategy refundStrategy;
+    private final GetAllTutorApplicationStrategy tutorApplicationStrategy;
+    private final GetAllPaymentStrategy paymentStrategy;
 
     @Autowired
-    public ResourceService(RefundStrategy refundStrategy,
-                           TutorApplicationStrategy tutorApplicationStrategy,
-                           PaymentStrategy paymentStrategy) {
+    public ResourceService(GetAllRefundStrategy refundStrategy,
+                           GetAllTutorApplicationStrategy tutorApplicationStrategy,
+                           GetAllPaymentStrategy paymentStrategy) {
         this.refundStrategy = refundStrategy;
         this.tutorApplicationStrategy = tutorApplicationStrategy;
         this.paymentStrategy = paymentStrategy;

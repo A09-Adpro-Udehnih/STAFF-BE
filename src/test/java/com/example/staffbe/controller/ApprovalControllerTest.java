@@ -10,7 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.staffbe.strategy.ApprovalService;
+import com.example.staffbe.service.ApprovalService;
 
 import org.springframework.context.annotation.Import;
 
@@ -48,7 +48,7 @@ public class ApprovalControllerTest {
         mockMvc.perform(post("/api/approval/approve/tutor/{id}", id))
                 .andExpect(status().isOk());  // Mengharapkan status 200 OK
 
-        verify(approvalService, times(1)).approve(id, "tutor");
+        verify(approvalService, times(1)).approve(id, "tutor"); // Memastikan bahwa ApprovalService.approve dipanggil setelah memanggil ApprovalController.approve
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ApprovalControllerTest {
         mockMvc.perform(post("/api/approval/reject/refund/{id}", id))
                 .andExpect(status().isOk());  // Mengharapkan status 200 OK
 
-        verify(approvalService, times(1)).reject(id, "refund");
+        verify(approvalService, times(1)).reject(id, "refund"); // Memastikan bahwa ApprovalService.approve dipanggil setelah memanggil ApprovalController.approve
     }
 
     @Test

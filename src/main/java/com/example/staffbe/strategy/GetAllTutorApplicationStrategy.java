@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class TutorApplicationStrategy implements GetAllStrategy<TutorApplication> {
+public class GetAllTutorApplicationStrategy implements GetAllStrategy<TutorApplication> {
 
     private final TutorApplicationRepository tutorApplicationRepository;
 
     @Autowired
-    public TutorApplicationStrategy(TutorApplicationRepository tutorApplicationRepository) {
+    public GetAllTutorApplicationStrategy(TutorApplicationRepository tutorApplicationRepository) {
         this.tutorApplicationRepository = tutorApplicationRepository;
     }
 

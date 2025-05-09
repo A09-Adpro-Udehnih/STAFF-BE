@@ -1,4 +1,4 @@
-package com.example.staffbe.strategy;
+package com.example.staffbe.service;
 
 import java.util.UUID;
 
@@ -10,6 +10,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
+
+import com.example.staffbe.strategy.ApprovalContext;
 
 class ApprovalServiceTest {
 

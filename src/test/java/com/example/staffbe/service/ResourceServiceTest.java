@@ -1,4 +1,4 @@
-package com.example.staffbe.strategy;
+package com.example.staffbe.service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,18 +17,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.staffbe.model.Payment;
 import com.example.staffbe.model.Refund;
 import com.example.staffbe.model.TutorApplication;
+import com.example.staffbe.strategy.GetAllPaymentStrategy;
+import com.example.staffbe.strategy.GetAllRefundStrategy;
+import com.example.staffbe.strategy.GetAllTutorApplicationStrategy;
 
 @ExtendWith(MockitoExtension.class)
 public class ResourceServiceTest {
 
     @Mock
-    private RefundStrategy refundStrategy;
+    private GetAllRefundStrategy refundStrategy;
 
     @Mock
-    private TutorApplicationStrategy tutorApplicationStrategy;
+    private GetAllTutorApplicationStrategy tutorApplicationStrategy;
 
     @Mock
-    private PaymentStrategy paymentStrategy;
+    private GetAllPaymentStrategy paymentStrategy;
 
     private ResourceService resourceService;
 

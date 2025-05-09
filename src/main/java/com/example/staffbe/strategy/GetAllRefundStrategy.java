@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class RefundStrategy implements GetAllStrategy<Refund> {
+public class GetAllRefundStrategy implements GetAllStrategy<Refund> {
 
     private final RefundRepository refundRepository;
 
     @Autowired
-    public RefundStrategy(RefundRepository refundRepository) {
+    public GetAllRefundStrategy(RefundRepository refundRepository) {
         this.refundRepository = refundRepository;
     }
 
