@@ -13,12 +13,12 @@ import java.util.UUID;
 public class ApproveTutorApplicationStrategy implements ApprovalStrategy {
 
     private final TutorApplicationRepository tutorApplicationRepository;
-    private final TutorApplicationServiceImpl tutorApplicationServiceImpl;
+    private final TutorApplicationServiceImpl tutorApplicationService;
 
     @Autowired
-    public ApproveTutorApplicationStrategy(TutorApplicationRepository tutorApplicationRepository,TutorApplicationServiceImpl tutorApplicationserviceImpl) {
+    public ApproveTutorApplicationStrategy(TutorApplicationRepository tutorApplicationRepository,TutorApplicationServiceImpl tutorApplicationservice) {
         this.tutorApplicationRepository = tutorApplicationRepository;
-        this.tutorApplicationServiceImpl = tutorApplicationserviceImpl;
+        this.tutorApplicationService = tutorApplicationservice;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ApproveTutorApplicationStrategy implements ApprovalStrategy {
         TutorApplication tutorApplication = tutorApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Tutor application not found"));
 
-        tutorApplicationServiceImpl.approveApplication(applicationId);  // Menyetujui aplikasi tutor
+        tutorApplicationService.approveApplication(applicationId);  // Menyetujui aplikasi tutor
         tutorApplicationRepository.save(tutorApplication);  // Simpan status yang telah diperbarui
     }
 
