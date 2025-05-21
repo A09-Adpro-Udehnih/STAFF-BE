@@ -23,6 +23,12 @@ class ApprovalContextTest {
     @Mock
     private RejectRefundStrategy rejectRefundStrategy;
 
+    @Mock
+    private ApprovePaymentStrategy approvePaymentStrategy;
+
+    @Mock
+    private RejectPaymentStrategy rejectPaymentStrategy;
+
     private ApprovalContext approvalContext;
 
     private UUID id;
@@ -35,7 +41,9 @@ class ApprovalContextTest {
             approveTutorApplicationStrategy,
             rejectTutorApplicationStrategy,
             approveRefundStrategy,
-            rejectRefundStrategy
+            rejectRefundStrategy,
+            approvePaymentStrategy,
+            rejectPaymentStrategy
         );
         id = UUID.randomUUID();
     }
@@ -74,5 +82,23 @@ class ApprovalContextTest {
 
         // Verifikasi apakah reject refund strategy dipanggil
         verify(rejectRefundStrategy, times(1)).reject(id);
+    }
+
+    @Test
+    void testApprovePayment() {
+        // Simulasi approve payment
+        approvalContext.approve(id, "payment");
+
+        // Verifikasi apakah approve payment strategy dipanggil
+        verify(approvePaymentStrategy, times(1)).approve(id);
+    }
+
+    @Test
+    void testRejectPayment() {
+        // Simulasi reject payment
+        approvalContext.reject(id, "payment");
+
+        // Verifikasi apakah reject payment strategy dipanggil
+        verify(rejectPaymentStrategy, times(1)).reject(id);
     }
 }

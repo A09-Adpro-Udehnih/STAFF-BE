@@ -15,17 +15,23 @@ public class ApprovalContext {
     private final ApprovalStrategy rejectTutorApplicationStrategy;
     private final ApprovalStrategy approveRefundStrategy;
     private final ApprovalStrategy rejectRefundStrategy;
+    private final ApprovalStrategy approvePaymentStrategy;
+    private final ApprovalStrategy rejectPaymentStrategy;
 
     @Autowired
     public ApprovalContext(
             ApprovalStrategy approveTutorApplicationStrategy,
             ApprovalStrategy rejectTutorApplicationStrategy,
             ApprovalStrategy approveRefundStrategy,
-            ApprovalStrategy rejectRefundStrategy) {
+            ApprovalStrategy rejectRefundStrategy,
+            ApprovalStrategy approvePaymentStrategy,
+            ApprovalStrategy rejectPaymentStrategy) {
         this.approveTutorApplicationStrategy = approveTutorApplicationStrategy;
         this.rejectTutorApplicationStrategy = rejectTutorApplicationStrategy;
         this.approveRefundStrategy = approveRefundStrategy;
         this.rejectRefundStrategy = rejectRefundStrategy;
+        this.approvePaymentStrategy = approvePaymentStrategy;
+        this.rejectPaymentStrategy = rejectPaymentStrategy;
     }
 
     // Method untuk approve, memilih strategi berdasarkan tipe
@@ -36,6 +42,9 @@ public class ApprovalContext {
                 break;
             case "refund":
                 approveRefundStrategy.approve(id);
+                break;
+            case "payment":
+                approvePaymentStrategy.approve(id);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid type");
@@ -50,6 +59,9 @@ public class ApprovalContext {
                 break;
             case "refund":
                 rejectRefundStrategy.reject(id);
+                break;
+            case "payment":
+                rejectPaymentStrategy.reject(id);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid type");
