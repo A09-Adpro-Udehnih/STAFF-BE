@@ -12,7 +12,4 @@ public interface TutorApplicationRepository extends JpaRepository<TutorApplicati
 
     // Method untuk mencari TutorApplication berdasarkan studentId
     List<TutorApplication> findByStudentId(UUID studentId);
-
-    // Method untuk mengambil semua TutorApplication
-    List<TutorApplication> findAll();
 }
