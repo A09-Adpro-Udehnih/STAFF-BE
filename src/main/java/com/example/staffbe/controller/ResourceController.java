@@ -1,16 +1,17 @@
 package com.example.staffbe.controller;
 
-import com.example.staffbe.model.Refund;
-import com.example.staffbe.model.TutorApplication;
-import com.example.staffbe.model.Payment;
-import com.example.staffbe.service.ResourceService;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import com.example.staffbe.model.Payment;
+import com.example.staffbe.model.Refund;
+import com.example.staffbe.model.TutorApplication;
+import com.example.staffbe.service.ResourceService;
 
 @RestController
 public class ResourceController {
@@ -22,7 +23,7 @@ public class ResourceController {
         this.resourceService = resourceService;
     }
 
-    @GetMapping("/api/resources/dashboard")
+    @GetMapping("/api/v1/staff/resources/dashboard")
     public CompletableFuture<Map<String, Object>> getDashboardData() {
         CompletableFuture<List<Refund>> refundsFuture = resourceService.getAllRefundsAsync();
         CompletableFuture<List<TutorApplication>> tutorsFuture = resourceService.getAllTutorApplicationsAsync();
