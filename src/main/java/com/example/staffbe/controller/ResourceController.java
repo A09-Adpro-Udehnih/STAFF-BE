@@ -1,17 +1,20 @@
 package com.example.staffbe.controller;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.example.staffbe.dto.GlobalResponse;
+import com.example.staffbe.dto.StaffDashboardResponse;
 import com.example.staffbe.model.Payment;
 import com.example.staffbe.model.Refund;
 import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.service.ResourceService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class ResourceController {
@@ -23,8 +26,8 @@ public class ResourceController {
         this.resourceService = resourceService;
     }
 
-    @GetMapping("/api/v1/staff/resources/dashboard")
-    public CompletableFuture<Map<String, Object>> getDashboardData() {
+    @GetMapping("/resources/dashboard")
+    public CompletableFuture<ResponseEntity<GlobalResponse<StaffDashboardResponse>>> getDashboardData() {
         CompletableFuture<List<Refund>> refundsFuture = resourceService.getAllRefundsAsync();
         CompletableFuture<List<TutorApplication>> tutorsFuture = resourceService.getAllTutorApplicationsAsync();
         CompletableFuture<List<Payment>> paymentsFuture = resourceService.getAllPaymentsAsync();
@@ -32,11 +35,20 @@ public class ResourceController {
         return CompletableFuture.allOf(refundsFuture, tutorsFuture, paymentsFuture)
                 .thenApply(v -> {
                     try {
-                        return Map.of(
-                            "refunds", refundsFuture.get(),
-                            "tutorApplications", tutorsFuture.get(),
-                            "payments", paymentsFuture.get()
+                        StaffDashboardResponse dashboardData = new StaffDashboardResponse(
+                                refundsFuture.get(),
+                                paymentsFuture.get(),
+                                tutorsFuture.get()
                         );
+
+                        GlobalResponse<StaffDashboardResponse> response = new GlobalResponse<>(
+                                HttpStatus.OK,
+                                true,
+                                "Dashboard data retrieved successfully",
+                                dashboardData
+                        );
+
+                        return ResponseEntity.ok(response);
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to fetch dashboard data", e);
                     }

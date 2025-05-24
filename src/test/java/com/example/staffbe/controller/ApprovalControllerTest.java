@@ -45,7 +45,7 @@ public class ApprovalControllerTest {
     @Test
     @WithMockUser  // Menambahkan anotasi @WithMockUser untuk menyimulasikan pengguna yang sudah terautentikasi
     void testApprove() throws Exception {
-        mockMvc.perform(post("/api/approval/approve/tutor/{id}", id))
+        mockMvc.perform(post("/approval/approve/tutor/{id}", id))
                 .andExpect(status().isOk());  // Mengharapkan status 200 OK
 
         verify(approvalService, times(1)).approve(id, "tutor"); // Memastikan bahwa ApprovalService.approve dipanggil setelah memanggil ApprovalController.approve
@@ -54,7 +54,7 @@ public class ApprovalControllerTest {
     @Test
     @WithMockUser  // Menambahkan anotasi @WithMockUser untuk menyimulasikan pengguna yang sudah terautentikasi
     void testReject() throws Exception {
-        mockMvc.perform(post("/api/approval/reject/refund/{id}", id))
+        mockMvc.perform(post("/approval/reject/refund/{id}", id))
                 .andExpect(status().isOk());  // Mengharapkan status 200 OK
 
         verify(approvalService, times(1)).reject(id, "refund"); // Memastikan bahwa ApprovalService.approve dipanggil setelah memanggil ApprovalController.approve
@@ -65,7 +65,7 @@ public class ApprovalControllerTest {
         // Simulasi bahwa ID tidak ditemukan
         doThrow(new RuntimeException("Resource not found")).when(approvalService).approve(id, "tutor");
 
-        mockMvc.perform(post("/api/approval/approve/tutor/{id}", id))
+        mockMvc.perform(post("/approval/approve/tutor/{id}", id))
                 .andExpect(status().isNotFound());  // Mengharapkan status 404 Not Found
     }
 
@@ -74,7 +74,7 @@ public class ApprovalControllerTest {
         // Simulasi bahwa ID tidak ditemukan
         doThrow(new RuntimeException("Resource not found")).when(approvalService).reject(id, "refund");
 
-        mockMvc.perform(post("/api/approval/reject/refund/{id}", id))
+        mockMvc.perform(post("/approval/reject/refund/{id}", id))
                 .andExpect(status().isNotFound());  // Mengharapkan status 404 Not Found
     }
 

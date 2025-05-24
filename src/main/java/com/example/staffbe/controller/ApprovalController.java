@@ -9,7 +9,7 @@ import com.example.staffbe.service.ApprovalService;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/staff/approval")
+@RequestMapping("/approval")
 public class ApprovalController {
 
     private final ApprovalService approvalService;
