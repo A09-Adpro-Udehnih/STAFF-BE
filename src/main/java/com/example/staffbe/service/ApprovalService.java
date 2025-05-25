@@ -18,10 +18,10 @@ public class ApprovalService {
     }
 
     public void approve(UUID id, String type) {
-        approvalContext.approve(id, type);  // Panggil ApprovalContext untuk memilih strategi yang sesuai
+        approvalContext.approve(id, type);  
     }
 
     public void reject(UUID id, String type) {
-        approvalContext.reject(id, type);  // Panggil ApprovalContext untuk memilih strategi yang sesuai
+        approvalContext.reject(id, type);  
     }
 }
