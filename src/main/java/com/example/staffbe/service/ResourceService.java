@@ -1,40 +1,46 @@
 package com.example.staffbe.service;
 
-import java.util.List;
-
+import com.example.staffbe.model.Refund;
+import com.example.staffbe.model.TutorApplication;
+import com.example.staffbe.model.Payment;
+import com.example.staffbe.repository.RefundRepository;
+import com.example.staffbe.repository.TutorApplicationRepository;
+import com.example.staffbe.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.example.staffbe.strategy.GetAllPaymentStrategy;
-import com.example.staffbe.strategy.GetAllRefundStrategy;
-import com.example.staffbe.strategy.GetAllTutorApplicationStrategy;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ResourceService {
 
-    private final GetAllRefundStrategy refundStrategy;
-    private final GetAllTutorApplicationStrategy tutorApplicationStrategy;
-    private final GetAllPaymentStrategy paymentStrategy;
+    private final RefundRepository refundRepository;
+    private final TutorApplicationRepository tutorApplicationRepository;
+    private final PaymentRepository paymentRepository;
 
     @Autowired
-    public ResourceService(GetAllRefundStrategy refundStrategy,
-                           GetAllTutorApplicationStrategy tutorApplicationStrategy,
-                           GetAllPaymentStrategy paymentStrategy) {
-        this.refundStrategy = refundStrategy;
-        this.tutorApplicationStrategy = tutorApplicationStrategy;
-        this.paymentStrategy = paymentStrategy;
+    public ResourceService(RefundRepository refundRepository,
+                           TutorApplicationRepository tutorApplicationRepository,
+                           PaymentRepository paymentRepository) {
+        this.refundRepository = refundRepository;
+        this.tutorApplicationRepository = tutorApplicationRepository;
+        this.paymentRepository = paymentRepository;
     }
 
-    public <T> List<T> getAll(String type) {
-        switch (type) {
-            case "refund":
-                return (List<T>) refundStrategy.findAll();
-            case "tutorApplication":
-                return (List<T>) tutorApplicationStrategy.findAll();
-            case "payment":
-                return (List<T>) paymentStrategy.findAll();
-            default:
-                throw new IllegalArgumentException("Invalid type: " + type);
-        }
+    @Async
+    public CompletableFuture<List<Refund>> getAllRefundsAsync() {
+        return CompletableFuture.completedFuture(refundRepository.findAll());
+    }
+
+    @Async
+    public CompletableFuture<List<TutorApplication>> getAllTutorApplicationsAsync() {
+        return CompletableFuture.completedFuture(tutorApplicationRepository.findAll());
+    }
+
+    @Async
+    public CompletableFuture<List<Payment>> getAllPaymentsAsync() {
+        return CompletableFuture.completedFuture(paymentRepository.findAll());
     }
 }

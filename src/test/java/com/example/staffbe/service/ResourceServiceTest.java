@@ -1,98 +1,68 @@
 package com.example.staffbe.service;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.staffbe.model.Payment;
 import com.example.staffbe.model.Refund;
 import com.example.staffbe.model.TutorApplication;
-import com.example.staffbe.strategy.GetAllPaymentStrategy;
-import com.example.staffbe.strategy.GetAllRefundStrategy;
-import com.example.staffbe.strategy.GetAllTutorApplicationStrategy;
+import com.example.staffbe.repository.PaymentRepository;
+import com.example.staffbe.repository.RefundRepository;
+import com.example.staffbe.repository.TutorApplicationRepository;
 
-@ExtendWith(MockitoExtension.class)
 public class ResourceServiceTest {
 
-    @Mock
-    private GetAllRefundStrategy refundStrategy;
-
-    @Mock
-    private GetAllTutorApplicationStrategy tutorApplicationStrategy;
-
-    @Mock
-    private GetAllPaymentStrategy paymentStrategy;
-
+    private RefundRepository refundRepository;
+    private TutorApplicationRepository tutorApplicationRepository;
+    private PaymentRepository paymentRepository;
     private ResourceService resourceService;
 
     @BeforeEach
-    public void setUp() {
-        resourceService = new ResourceService(refundStrategy, tutorApplicationStrategy, paymentStrategy);
+    void setUp() {
+        refundRepository = mock(RefundRepository.class);
+        tutorApplicationRepository = mock(TutorApplicationRepository.class);
+        paymentRepository = mock(PaymentRepository.class);
+        resourceService = new ResourceService(refundRepository, tutorApplicationRepository, paymentRepository);
     }
 
     @Test
-    public void testGetAllRefunds() {
-        // Prepare
-        List<Refund> expectedRefunds = Arrays.asList(new Refund(), new Refund());
-        when(refundStrategy.findAll()).thenReturn(expectedRefunds);
+    void testGetAllRefundsAsync() throws Exception {
+        List<Refund> mockRefunds = List.of(new Refund());
+        when(refundRepository.findAll()).thenReturn(mockRefunds);
 
-        // Execute
-        List<Refund> result = resourceService.getAll("refund");
+        CompletableFuture<List<Refund>> future = resourceService.getAllRefundsAsync();
+        assertEquals(mockRefunds, future.get());
 
-        // Verify
-        assertEquals(expectedRefunds, result);
-        verify(refundStrategy).findAll();
-        verifyNoInteractions(tutorApplicationStrategy, paymentStrategy);
+        verify(refundRepository, times(1)).findAll();
     }
 
     @Test
-    public void testGetAllTutorApplications() {
-        // Prepare
-        List<TutorApplication> expectedApplications = Arrays.asList(new TutorApplication(), new TutorApplication());
-        when(tutorApplicationStrategy.findAll()).thenReturn(expectedApplications);
+    void testGetAllTutorApplicationsAsync() throws Exception {
+        List<TutorApplication> mockList = List.of(new TutorApplication());
+        when(tutorApplicationRepository.findAll()).thenReturn(mockList);
 
-        // Execute
-        List<TutorApplication> result = resourceService.getAll("tutorApplication");
+        CompletableFuture<List<TutorApplication>> future = resourceService.getAllTutorApplicationsAsync();
+        assertEquals(mockList, future.get());
 
-        // Verify
-        assertEquals(expectedApplications, result);
-        verify(tutorApplicationStrategy).findAll();
-        verifyNoInteractions(refundStrategy, paymentStrategy);
+        verify(tutorApplicationRepository, times(1)).findAll();
     }
 
     @Test
-    public void testGetAllPayments() {
-        // Prepare
-        List<Payment> expectedPayments = Arrays.asList(new Payment(), new Payment());
-        when(paymentStrategy.findAll()).thenReturn(expectedPayments);
+    void testGetAllPaymentsAsync() throws Exception {
+        List<Payment> mockList = List.of(new Payment());
+        when(paymentRepository.findAll()).thenReturn(mockList);
 
-        // Execute
-        List<Payment> result = resourceService.getAll("payment");
+        CompletableFuture<List<Payment>> future = resourceService.getAllPaymentsAsync();
+        assertEquals(mockList, future.get());
 
-        // Verify
-        assertEquals(expectedPayments, result);
-        verify(paymentStrategy).findAll();
-        verifyNoInteractions(refundStrategy, tutorApplicationStrategy);
-    }
-
-    @Test
-    public void testGetAllWithInvalidType() {
-        // Execute & Verify
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            resourceService.getAll("invalidType");
-        });
-
-        assertEquals("Invalid type: invalidType", exception.getMessage());
-        verifyNoInteractions(refundStrategy, tutorApplicationStrategy, paymentStrategy);
+        verify(paymentRepository, times(1)).findAll();
     }
 }
