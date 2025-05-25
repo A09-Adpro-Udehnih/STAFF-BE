@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class RefundRepositoryTest {
+    UUID randomId = UUID.randomUUID();
 
     @Autowired
     private RefundRepository refundRepository;
@@ -29,7 +30,7 @@ public class RefundRepositoryTest {
 
     private Payment createAndSavePayment() {
         Payment payment = Payment.builder()
-                .userId("user123")
+                .userId(randomId) // Gunakan UUID untuk userId
                 .amount(250.00)
                 .method(PaymentMethod.BANK_TRANSFER)
                 .status(PaymentStatus.PAID)
@@ -58,7 +59,7 @@ public class RefundRepositoryTest {
         Optional<Refund> found = refundRepository.findById(refundId);
         assertTrue(found.isPresent());
         assertEquals(RefundStatus.ACCEPTED, found.get().getStatus());
-        assertEquals("user123", found.get().getPayment().getUserId());
+        assertEquals(randomId, found.get().getPayment().getUserId());
     }
 
     @Test

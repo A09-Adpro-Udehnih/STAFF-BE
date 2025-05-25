@@ -13,7 +13,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity // Mengaktifkan konfigurasi keamanan web Spring
 public class SecurityConfig {
 
    @Bean

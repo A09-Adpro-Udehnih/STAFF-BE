@@ -12,5 +12,5 @@ public interface PaymentService {
     List<Payment> getAllPayments();
 
     // Method untuk memperbarui status pembayaran
-    int updatePaymentStatus(UUID id, PaymentStatus status);
+    void updatePaymentStatus(UUID id, PaymentStatus status);
 }

@@ -37,7 +37,7 @@ public class ApprovalContext {
     // Method untuk approve, memilih strategi berdasarkan tipe
     public void approve(UUID id, String type) {
         switch (type) {
-            case "tutor":
+            case "tutorApplication":
                 approveTutorApplicationStrategy.approve(id);
                 break;
             case "refund":
@@ -54,7 +54,7 @@ public class ApprovalContext {
     // Method untuk reject, memilih strategi berdasarkan tipe
     public void reject(UUID id, String type) {
         switch (type) {
-            case "tutor":
+            case "tutorApplication":
                 rejectTutorApplicationStrategy.reject(id);
                 break;
             case "refund":

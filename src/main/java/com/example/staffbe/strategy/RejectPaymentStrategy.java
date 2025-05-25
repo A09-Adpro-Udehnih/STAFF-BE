@@ -30,7 +30,7 @@ public class RejectPaymentStrategy implements ApprovalStrategy {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        paymentService.updatePaymentStatus(paymentId, PaymentStatus.FAILED); // BAGIAN INI HARUS DIUBAH MENJADI payment.approvePayment(paymentId) UNTUK MENYESUAIKAN DENGAN REFUND SERVICE IMPL
+        paymentService.updatePaymentStatus(paymentId, PaymentStatus.FAILED); 
         paymentRepository.save(payment);  
     }
     

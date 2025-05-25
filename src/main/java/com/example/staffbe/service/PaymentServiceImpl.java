@@ -2,7 +2,10 @@ package com.example.staffbe.service;
 
 import com.example.staffbe.repository.PaymentRepository;
 import com.example.staffbe.enums.PaymentStatus;
+import com.example.staffbe.enums.RefundStatus;
 import com.example.staffbe.model.Payment;
+import com.example.staffbe.model.Refund;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +32,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public int updatePaymentStatus(UUID id, PaymentStatus status) {
-        Optional<Payment> paymentOptional = paymentRepository.findById(id);
+    public void updatePaymentStatus(UUID id, PaymentStatus status) {
+        Payment payment = paymentRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        if (paymentOptional.isPresent()) {
-            Payment payment = paymentOptional.get();
-            payment.setStatus(status);
-            paymentRepository.save(payment);
-            return 1; // Update successful
-        } else {
-            return 0; // Payment not found
-        }
+        // Ubah status refund menjadi ACCEPTED
+        payment.setStatus(status);
+        paymentRepository.save(payment);
     }
 }

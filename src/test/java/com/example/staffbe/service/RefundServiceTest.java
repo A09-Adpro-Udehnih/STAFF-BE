@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.example.staffbe.enums.PaymentMethod;
 import com.example.staffbe.enums.PaymentStatus;
 
 import java.util.List;
@@ -39,11 +41,14 @@ public class RefundServiceTest {
     @BeforeEach
     void setUp() {
         UUID paymentId = UUID.randomUUID();
+        UUID testPaymentUserId = UUID.randomUUID(); // Inisialisasi testPaymentUserId sebagai UUID
+
         testPayment = Payment.builder()
                 .id(paymentId)
-                .userId(UUID.randomUUID().toString())
-                .amount(100)
-                .status(PaymentStatus.PENDING)
+                .userId(testPaymentUserId) // <-- UBAH DI SINI: Gunakan UUID
+                .amount(100.0) // Pastikan tipe data amount di Payment sesuai (misal double atau BigDecimal)
+                .status(PaymentStatus.PENDING) // Anda menggunakan PENDING di sini
+                .method(PaymentMethod.BANK_TRANSFER) // Tambahkan method jika ini field di Payment Anda
                 .paymentReference("ref-123")
                 .createdAt(java.time.LocalDateTime.now())
                 .build();
@@ -51,8 +56,8 @@ public class RefundServiceTest {
         refundId = UUID.randomUUID();
         testRefund = Refund.builder()
                 .id(refundId)
-                .payment(testPayment)
-                .amount(50)
+                .payment(testPayment) // payment yang sudah menggunakan UUID untuk userId
+                .amount(50.0) // Pastikan tipe data amount di Refund sesuai
                 .status(RefundStatus.PENDING)
                 .reason("Product refund")
                 .createdAt(java.time.LocalDateTime.now())

@@ -51,7 +51,7 @@ class ApprovalContextTest {
     @Test
     void testApproveTutorApplication() {
         // Simulasi approve tutor application
-        approvalContext.approve(id, "tutor");
+        approvalContext.approve(id, "tutorApplication");
 
         // Verifikasi apakah approve tutor strategy dipanggil
         verify(approveTutorApplicationStrategy, times(1)).approve(id);
@@ -60,7 +60,7 @@ class ApprovalContextTest {
     @Test
     void testRejectTutorApplication() {
         // Simulasi reject tutor application
-        approvalContext.reject(id, "tutor");
+        approvalContext.reject(id, "tutorApplication");
 
         // Verifikasi apakah reject tutor strategy dipanggil
         verify(rejectTutorApplicationStrategy, times(1)).reject(id);
