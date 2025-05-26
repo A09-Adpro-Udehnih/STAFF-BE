@@ -1,81 +1,120 @@
 package com.example.staffbe.controller;
 
+import com.example.staffbe.enums.Role;
+import com.example.staffbe.model.User;
+import com.example.staffbe.service.ApprovalService;
+import com.example.staffbe.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.example.staffbe.service.ApprovalService;
-
-import org.springframework.context.annotation.Import;
-
+import java.security.Principal;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ApprovalController.class)
-@Import(TestSecurityConfig.class)  // Mengimpor konfigurasi keamanan untuk pengujian
+@ExtendWith(MockitoExtension.class)
 public class ApprovalControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private ApprovalService approvalService;
+
+    @Mock
+    private UserServiceImpl userService;
 
     @InjectMocks
     private ApprovalController approvalController;
 
+    private MockMvc mockMvc;
     private UUID id;
+    private UUID userId;
+    private Principal principal;
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(approvalController).build();
         id = UUID.randomUUID();
+        userId = UUID.randomUUID();
+        principal = () -> userId.toString();
     }
 
     @Test
-    @WithMockUser  // Menambahkan anotasi @WithMockUser untuk menyimulasikan pengguna yang sudah terautentikasi
-    void testApprove() throws Exception {
-        mockMvc.perform(post("/api/approval/approve/tutor/{id}", id))
-                .andExpect(status().isOk());  // Mengharapkan status 200 OK
+    void testApproveAsStaff() throws Exception {
+        User mockUser = User.builder().id(userId).role(Role.STAFF).build();
+        when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
-        verify(approvalService, times(1)).approve(id, "tutor"); // Memastikan bahwa ApprovalService.approve dipanggil setelah memanggil ApprovalController.approve
+        mockMvc.perform(post("/approval/approve/tutor/{id}", id)
+                        .principal(principal))
+                .andExpect(status().isOk());
+
+        verify(approvalService, times(1)).approve(id, "tutor");
     }
 
     @Test
-    @WithMockUser  // Menambahkan anotasi @WithMockUser untuk menyimulasikan pengguna yang sudah terautentikasi
-    void testReject() throws Exception {
-        mockMvc.perform(post("/api/approval/reject/refund/{id}", id))
-                .andExpect(status().isOk());  // Mengharapkan status 200 OK
+    void testRejectAsStaff() throws Exception {
+        User mockUser = User.builder().id(userId).role(Role.STAFF).build();
+        when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
-        verify(approvalService, times(1)).reject(id, "refund"); // Memastikan bahwa ApprovalService.approve dipanggil setelah memanggil ApprovalController.approve
+        mockMvc.perform(post("/approval/reject/refund/{id}", id)
+                        .principal(principal))
+                .andExpect(status().isOk());
+
+        verify(approvalService, times(1)).reject(id, "refund");
+    }
+
+    @Test
+    void testApproveForbiddenForNonStaff() throws Exception {
+        User mockUser = User.builder().id(userId).role(Role.STUDENT).build();
+        when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
+
+        mockMvc.perform(post("/approval/approve/tutor/{id}", id)
+                        .principal(principal))
+                .andExpect(status().isForbidden());
+
+        verify(approvalService, never()).approve(any(), any());
+    }
+
+    @Test
+    void testRejectForbiddenForNonStaff() throws Exception {
+        User mockUser = User.builder().id(userId).role(Role.TUTOR).build();
+        when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
+
+        mockMvc.perform(post("/approval/reject/refund/{id}", id)
+                        .principal(principal))
+                .andExpect(status().isForbidden());
+
+        verify(approvalService, never()).reject(any(), any());
     }
 
     @Test
     void testApproveNotFound() throws Exception {
-        // Simulasi bahwa ID tidak ditemukan
-        doThrow(new RuntimeException("Resource not found")).when(approvalService).approve(id, "tutor");
+        User mockUser = User.builder().id(userId).role(Role.STAFF).build();
+        when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
+        doThrow(new RuntimeException("Resource not found"))
+                .when(approvalService).approve(id, "tutor");
 
-        mockMvc.perform(post("/api/approval/approve/tutor/{id}", id))
-                .andExpect(status().isNotFound());  // Mengharapkan status 404 Not Found
+        mockMvc.perform(post("/approval/approve/tutor/{id}", id)
+                        .principal(principal))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void testRejectNotFound() throws Exception {
-        // Simulasi bahwa ID tidak ditemukan
-        doThrow(new RuntimeException("Resource not found")).when(approvalService).reject(id, "refund");
+        User mockUser = User.builder().id(userId).role(Role.STAFF).build();
+        when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
+        doThrow(new RuntimeException("Resource not found"))
+                .when(approvalService).reject(id, "refund");
 
-        mockMvc.perform(post("/api/approval/reject/refund/{id}", id))
-                .andExpect(status().isNotFound());  // Mengharapkan status 404 Not Found
+        mockMvc.perform(post("/approval/reject/refund/{id}", id)
+                        .principal(principal))
+                .andExpect(status().isNotFound());
     }
-
 }

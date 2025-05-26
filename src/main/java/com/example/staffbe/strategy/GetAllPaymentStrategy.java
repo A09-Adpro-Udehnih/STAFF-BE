@@ -2,7 +2,7 @@ package com.example.staffbe.strategy;
 
 import com.example.staffbe.model.Payment;
 import com.example.staffbe.repository.PaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,7 +12,7 @@ public class GetAllPaymentStrategy implements GetAllStrategy<Payment> {
 
     private final PaymentRepository paymentRepository;
 
-    @Autowired
+    
     public GetAllPaymentStrategy(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
     }

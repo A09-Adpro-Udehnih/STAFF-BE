@@ -6,7 +6,6 @@ import com.example.staffbe.model.Payment;
 import com.example.staffbe.repository.RefundRepository;
 import com.example.staffbe.repository.TutorApplicationRepository;
 import com.example.staffbe.repository.PaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,6 @@ public class ResourceService {
     private final TutorApplicationRepository tutorApplicationRepository;
     private final PaymentRepository paymentRepository;
 
-    @Autowired
     public ResourceService(RefundRepository refundRepository,
                            TutorApplicationRepository tutorApplicationRepository,
                            PaymentRepository paymentRepository) {

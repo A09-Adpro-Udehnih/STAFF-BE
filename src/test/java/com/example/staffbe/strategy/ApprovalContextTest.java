@@ -1,21 +1,26 @@
 package com.example.staffbe.strategy;
 
-import java.util.UUID;
-
+import com.example.staffbe.repository.PaymentRepository;
+import com.example.staffbe.repository.RefundRepository;
+import com.example.staffbe.repository.TutorApplicationRepository;
+import com.example.staffbe.service.TutorApplicationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ApprovalContextTest {
 
     @Mock
-    private ApproveTutorApplicationStrategy approveTutorApplicationStrategy;
+    private ApprovePaymentStrategy approvePaymentStrategy;
 
     @Mock
-    private RejectTutorApplicationStrategy rejectTutorApplicationStrategy;
+    private RejectPaymentStrategy rejectPaymentStrategy;
 
     @Mock
     private ApproveRefundStrategy approveRefundStrategy;
@@ -24,19 +29,29 @@ class ApprovalContextTest {
     private RejectRefundStrategy rejectRefundStrategy;
 
     @Mock
-    private ApprovePaymentStrategy approvePaymentStrategy;
+    private ApproveTutorApplicationStrategy approveTutorApplicationStrategy;
 
     @Mock
-    private RejectPaymentStrategy rejectPaymentStrategy;
+    private RejectTutorApplicationStrategy rejectTutorApplicationStrategy;
+
+    @Mock
+    private PaymentRepository paymentRepository;
+
+    @Mock
+    private RefundRepository refundRepository;
+
+    @Mock
+    private TutorApplicationRepository tutorApplicationRepository;
+
+    @Mock
+    private TutorApplicationServiceImpl tutorApplicationService;
 
     private ApprovalContext approvalContext;
-
     private UUID id;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        // Manually create the ApprovalContext with our mocks
         approvalContext = new ApprovalContext(
             approveTutorApplicationStrategy,
             rejectTutorApplicationStrategy,
@@ -49,56 +64,140 @@ class ApprovalContextTest {
     }
 
     @Test
-    void testApproveTutorApplication() {
-        // Simulasi approve tutor application
-        approvalContext.approve(id, "tutor");
+    void testApprovePayment() {
+        // Act
+        approvalContext.approve(id, "payment");
 
-        // Verifikasi apakah approve tutor strategy dipanggil
-        verify(approveTutorApplicationStrategy, times(1)).approve(id);
-    }
-
-    @Test
-    void testRejectTutorApplication() {
-        // Simulasi reject tutor application
-        approvalContext.reject(id, "tutor");
-
-        // Verifikasi apakah reject tutor strategy dipanggil
-        verify(rejectTutorApplicationStrategy, times(1)).reject(id);
+        // Assert
+        verify(approvePaymentStrategy, times(1)).approve(id);
+        verify(approveRefundStrategy, never()).approve(any());
+        verify(approveTutorApplicationStrategy, never()).approve(any());
     }
 
     @Test
     void testApproveRefund() {
-        // Simulasi approve refund
+        // Act
         approvalContext.approve(id, "refund");
 
-        // Verifikasi apakah approve refund strategy dipanggil
+        // Assert
         verify(approveRefundStrategy, times(1)).approve(id);
+        verify(approvePaymentStrategy, never()).approve(any());
+        verify(approveTutorApplicationStrategy, never()).approve(any());
     }
 
     @Test
-    void testRejectRefund() {
-        // Simulasi reject refund
-        approvalContext.reject(id, "refund");
+    void testApproveTutorApplication() {
+        // Act
+        approvalContext.approve(id, "tutor");
 
-        // Verifikasi apakah reject refund strategy dipanggil
-        verify(rejectRefundStrategy, times(1)).reject(id);
-    }
-
-    @Test
-    void testApprovePayment() {
-        // Simulasi approve payment
-        approvalContext.approve(id, "payment");
-
-        // Verifikasi apakah approve payment strategy dipanggil
-        verify(approvePaymentStrategy, times(1)).approve(id);
+        // Assert
+        verify(approveTutorApplicationStrategy, times(1)).approve(id);
+        verify(approvePaymentStrategy, never()).approve(any());
+        verify(approveRefundStrategy, never()).approve(any());
     }
 
     @Test
     void testRejectPayment() {
-        // Simulasi reject payment
+        // Act
         approvalContext.reject(id, "payment");
 
-        // Verifikasi apakah reject payment strategy dipanggil
+        // Assert
         verify(rejectPaymentStrategy, times(1)).reject(id);
+        verify(rejectRefundStrategy, never()).reject(any());
+        verify(rejectTutorApplicationStrategy, never()).reject(any());
+    }
+
+    @Test
+    void testRejectRefund() {
+        // Act
+        approvalContext.reject(id, "refund");
+
+        // Assert
+        verify(rejectRefundStrategy, times(1)).reject(id);
+        verify(rejectPaymentStrategy, never()).reject(any());
+        verify(rejectTutorApplicationStrategy, never()).reject(any());
+    }
+
+    @Test
+    void testRejectTutorApplication() {
+        // Act
+        approvalContext.reject(id, "tutor");
+
+        // Assert
+        verify(rejectTutorApplicationStrategy, times(1)).reject(id);
+        verify(rejectPaymentStrategy, never()).reject(any());
+        verify(rejectRefundStrategy, never()).reject(any());
+    }
+
+    @Test
+    void testApproveInvalidType() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approvalContext.approve(id, "invalid");
+        });
+
+        verify(approvePaymentStrategy, never()).approve(any());
+        verify(approveRefundStrategy, never()).approve(any());
+        verify(approveTutorApplicationStrategy, never()).approve(any());
+    }
+
+    @Test
+    void testRejectInvalidType() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approvalContext.reject(id, "invalid");
+        });
+
+        verify(rejectPaymentStrategy, never()).reject(any());
+        verify(rejectRefundStrategy, never()).reject(any());
+        verify(rejectTutorApplicationStrategy, never()).reject(any());
+    }
+
+    @Test
+    void testApproveWithNullId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approvalContext.approve(null, "payment");
+        });
+
+        verify(approvePaymentStrategy, never()).approve(any());
+        verify(approveRefundStrategy, never()).approve(any());
+        verify(approveTutorApplicationStrategy, never()).approve(any());
+    }
+
+    @Test
+    void testRejectWithNullId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approvalContext.reject(null, "payment");
+        });
+
+        verify(rejectPaymentStrategy, never()).reject(any());
+        verify(rejectRefundStrategy, never()).reject(any());
+        verify(rejectTutorApplicationStrategy, never()).reject(any());
+    }
+
+    @Test
+    void testApproveWithNullType() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approvalContext.approve(id, null);
+        });
+
+        verify(approvePaymentStrategy, never()).approve(any());
+        verify(approveRefundStrategy, never()).approve(any());
+        verify(approveTutorApplicationStrategy, never()).approve(any());
+    }
+
+    @Test
+    void testRejectWithNullType() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approvalContext.reject(id, null);
+        });
+
+        verify(rejectPaymentStrategy, never()).reject(any());
+        verify(rejectRefundStrategy, never()).reject(any());
+        verify(rejectTutorApplicationStrategy, never()).reject(any());
     }
 }

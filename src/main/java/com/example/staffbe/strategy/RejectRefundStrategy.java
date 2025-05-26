@@ -3,8 +3,7 @@ package com.example.staffbe.strategy;
 import com.example.staffbe.model.Refund;
 import com.example.staffbe.repository.RefundRepository;
 import com.example.staffbe.service.RefundServiceImpl;
-import com.example.staffbe.enums.RefundStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,7 +15,7 @@ public class RejectRefundStrategy implements ApprovalStrategy {
     private final RefundServiceImpl refundService;
 
 
-    @Autowired
+    
     public RejectRefundStrategy(RefundRepository refundRepository,RefundServiceImpl refundService) {
         this.refundRepository = refundRepository;
         this.refundService = refundService;
@@ -29,10 +28,14 @@ public class RejectRefundStrategy implements ApprovalStrategy {
 
     @Override
     public void reject(UUID refundId) {
+        if (refundId == null) {
+            throw new IllegalArgumentException("Refund ID cannot be null");
+        }
+
         Refund refund = refundRepository.findById(refundId)
                 .orElseThrow(() -> new RuntimeException("Refund not found"));
 
-        refundService.rejectRefund(refundId); // BAGIAN INI HARUS DIUBAH MENJADI refund.approveRefund(refundId) UNTUK MENYESUAIKAN DENGAN REFUND SERVICE IMPL
-        refundRepository.save(refund);  
+        refundService.rejectRefund(refundId);
+        refundRepository.save(refund);
     }
 }

@@ -3,8 +3,7 @@ package com.example.staffbe.strategy;
 import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.repository.TutorApplicationRepository;
 import com.example.staffbe.service.TutorApplicationServiceImpl;
-import com.example.staffbe.enums.TutorApplicationStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -15,7 +14,7 @@ public class ApproveTutorApplicationStrategy implements ApprovalStrategy {
     private final TutorApplicationRepository tutorApplicationRepository;
     private final TutorApplicationServiceImpl tutorApplicationService;
 
-    @Autowired
+    
     public ApproveTutorApplicationStrategy(TutorApplicationRepository tutorApplicationRepository,TutorApplicationServiceImpl tutorApplicationservice) {
         this.tutorApplicationRepository = tutorApplicationRepository;
         this.tutorApplicationService = tutorApplicationservice;
@@ -23,6 +22,10 @@ public class ApproveTutorApplicationStrategy implements ApprovalStrategy {
 
     @Override
     public void approve(UUID applicationId) {
+        if (applicationId == null) {
+            throw new IllegalArgumentException("Application ID cannot be null");
+        }
+
         TutorApplication tutorApplication = tutorApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Tutor application not found"));
 

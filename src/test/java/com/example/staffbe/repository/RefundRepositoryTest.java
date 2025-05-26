@@ -5,12 +5,12 @@ import com.example.staffbe.enums.PaymentStatus;
 import com.example.staffbe.enums.RefundStatus;
 import com.example.staffbe.model.Payment;
 import com.example.staffbe.model.Refund;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +27,16 @@ public class RefundRepositoryTest {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    private UUID randomId;
+
+    @BeforeEach
+    void setUp() {
+        randomId = UUID.randomUUID();
+    }
+
     private Payment createAndSavePayment() {
         Payment payment = Payment.builder()
-                .userId("user123")
+                .userId(randomId)
                 .amount(250.00)
                 .method(PaymentMethod.BANK_TRANSFER)
                 .status(PaymentStatus.PAID)
@@ -58,7 +65,7 @@ public class RefundRepositoryTest {
         Optional<Refund> found = refundRepository.findById(refundId);
         assertTrue(found.isPresent());
         assertEquals(RefundStatus.ACCEPTED, found.get().getStatus());
-        assertEquals("user123", found.get().getPayment().getUserId());
+        assertEquals(randomId, found.get().getPayment().getUserId());
     }
 
     @Test

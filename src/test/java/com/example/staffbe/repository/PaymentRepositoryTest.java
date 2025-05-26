@@ -24,8 +24,10 @@ public class PaymentRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        UUID userIdAsUUID = UUID.randomUUID();
+
         testPayment = Payment.builder()
-                .userId("user-123")
+                .userId(userIdAsUUID)
                 .amount(100.0)
                 .method(PaymentMethod.BANK_TRANSFER)
                 .status(PaymentStatus.PENDING)
@@ -33,33 +35,32 @@ public class PaymentRepositoryTest {
                 .createdAt(java.time.LocalDateTime.now())
                 .build();
 
-        paymentRepository.save(testPayment);
+        testPayment = paymentRepository.save(testPayment);
     }
 
     @Test
     void testFindById() {
-        // Cari pembayaran berdasarkan ID
         Optional<Payment> retrievedPayment = paymentRepository.findById(testPayment.getId());
 
-        assertTrue(retrievedPayment.isPresent()); // Pastikan pembayaran ditemukan
+        assertTrue(retrievedPayment.isPresent(), "Pembayaran seharusnya ditemukan");
         assertEquals(testPayment.getId(), retrievedPayment.get().getId());
-        assertEquals(testPayment.getUserId(), retrievedPayment.get().getUserId());
+        assertEquals(testPayment.getUserId(), retrievedPayment.get().getUserId(), "User ID seharusnya cocok");
     }
 
     @Test
     void testFindById_NotFound() {
-        // Cari pembayaran dengan ID yang tidak ada
         UUID randomId = UUID.randomUUID();
         Optional<Payment> retrievedPayment = paymentRepository.findById(randomId);
 
-        assertFalse(retrievedPayment.isPresent()); // Pastikan pembayaran tidak ditemukan
+        assertFalse(retrievedPayment.isPresent(), "Pembayaran seharusnya tidak ditemukan untuk ID acak");
     }
 
     @Test
     void testFindAllPayments() {
         List<Payment> payments = paymentRepository.findAll();
-        assertNotNull(payments);
-        assertFalse(payments.isEmpty());
-        assertEquals(1, payments.size());  // Assuming only 1 payment is saved
+        assertNotNull(payments, "Daftar pembayaran tidak boleh null");
+        assertFalse(payments.isEmpty(), "Daftar pembayaran tidak boleh kosong setelah setUp");
+        assertEquals(1, payments.size(), "Seharusnya hanya ada satu pembayaran dari setUp");
+        assertEquals(testPayment.getId(), payments.get(0).getId(), "ID pembayaran di daftar seharusnya cocok");
     }
 }

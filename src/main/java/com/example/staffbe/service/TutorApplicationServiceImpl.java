@@ -3,10 +3,8 @@ package com.example.staffbe.service;
 import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.repository.TutorApplicationRepository;
 import com.example.staffbe.enums.TutorApplicationStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.staffbe.enums.Role;
-import com.example.staffbe.service.UserService;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +15,6 @@ public class TutorApplicationServiceImpl implements TutorApplicationService {
     private final TutorApplicationRepository tutorApplicationRepository;
     private final UserService userService;
 
-    @Autowired
     public TutorApplicationServiceImpl(TutorApplicationRepository tutorApplicationRepository, UserService userService) {
         this.tutorApplicationRepository = tutorApplicationRepository;
         this.userService = userService;

@@ -11,8 +11,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.UUID;
+import java.util.Optional;
 
 public class RejectPaymentStrategyTest {
 
@@ -34,34 +35,62 @@ public class RejectPaymentStrategyTest {
         MockitoAnnotations.openMocks(this);
 
         paymentId = UUID.randomUUID();  // Simulasi ID payment yang akan direject
-        mockPayment = Payment.builder()
-                .id(paymentId)
-                .amount(100.0)
-                .status(PaymentStatus.PENDING)  // Status sebelum reject
-                .build();
+        mockPayment = new Payment();
+        mockPayment.setId(paymentId);
+        mockPayment.setStatus(PaymentStatus.PENDING);  // Status sebelum reject
     }
 
     @Test
     void testRejectPayment() {
-        // Simulasi behavior repository untuk menemukan payment
-        when(paymentRepository.findById(paymentId)).thenReturn(java.util.Optional.of(mockPayment));
+        // Arrange
+        when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(mockPayment));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Simulasi behavior untuk mengubah status payment menjadi REJECTED
-        doAnswer(invocation -> {
-            mockPayment.setStatus(PaymentStatus.FAILED);  // Mengubah status payment menjadi REJECTED
-            return null;
-        }).when(paymentRepository).save(mockPayment);  // Simulasi pemanggilan save() pada repository
-
-        // Panggil reject untuk payment
+        // Act
         rejectPaymentStrategy.reject(paymentId);
 
-        // Verifikasi bahwa status payment terupdate menjadi REJECTED
-        assertEquals(PaymentStatus.FAILED, mockPayment.getStatus());  // Pastikan statusnya terupdate menjadi REJECTED
-
-        // Verifikasi bahwa rejectPayment dipanggil dengan ID yang benar
+        // Assert
+        verify(paymentRepository, times(1)).findById(paymentId);
         verify(paymentService, times(1)).updatePaymentStatus(paymentId, PaymentStatus.FAILED);
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
 
-        // Verifikasi bahwa save() dipanggil pada repository untuk menyimpan perubahan status
-        verify(paymentRepository, times(1)).save(mockPayment);  // Memastikan bahwa save dipanggil sekali
+    @Test
+    void testRejectPaymentNotFound() {
+        // Arrange
+        when(paymentRepository.findById(paymentId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            rejectPaymentStrategy.reject(paymentId);
+        });
+
+        verify(paymentRepository, times(1)).findById(paymentId);
+        verify(paymentService, never()).updatePaymentStatus(any(), any());
+        verify(paymentRepository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    void testRejectPaymentWithNullId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            rejectPaymentStrategy.reject(null);
+        });
+
+        verify(paymentRepository, never()).findById(any());
+        verify(paymentService, never()).updatePaymentStatus(any(), any());
+        verify(paymentRepository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    void testApproveNotSupported() {
+        // Act & Assert
+        assertThrows(UnsupportedOperationException.class, () -> {
+            rejectPaymentStrategy.approve(paymentId);
+        });
+
+        verify(paymentRepository, never()).findById(any());
+        verify(paymentService, never()).updatePaymentStatus(any(), any());
+        verify(paymentRepository, never()).save(any(Payment.class));
     }
 }

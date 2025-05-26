@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest // Anotasi ini untuk pengujian repository dengan Spring Data JPA
+@DataJpaTest
 public class UserRepositoryTest {
 
     @Autowired
@@ -27,7 +27,7 @@ public class UserRepositoryTest {
                 .email("test@example.com")
                 .fullName("Test User")
                 .password("password123")
-                .role(Role.STAFF)  // Set role sesuai enum yang ada
+                .role(Role.STAFF)
                 .build();
         
         // Simpan user di database untuk pengujian
