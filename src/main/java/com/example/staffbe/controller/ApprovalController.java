@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/approval")
-@CrossOrigin(origins = "https://localhost:3000") // Allow requests from localhost:3000
 public class ApprovalController {
 
     private final ApprovalService approvalService;
@@ -20,7 +19,6 @@ public class ApprovalController {
         this.approvalService = approvalService;
     }
 
-      // Allow all origins for CORS
     @PostMapping("/approve/{type}/{id}")
     public ResponseEntity<String> approve(@PathVariable("id") UUID id, @PathVariable("type") String type) {
         try {
