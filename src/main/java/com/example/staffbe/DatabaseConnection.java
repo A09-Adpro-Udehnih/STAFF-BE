@@ -1,9 +1,9 @@
 package com.example.staffbe;
 
+import javax.sql.DataSource;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
-import javax.sql.DataSource;
 
 public class DatabaseConnection {
     private static final HikariDataSource dataSource;
