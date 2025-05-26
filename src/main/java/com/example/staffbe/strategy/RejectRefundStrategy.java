@@ -3,8 +3,7 @@ package com.example.staffbe.strategy;
 import com.example.staffbe.model.Refund;
 import com.example.staffbe.repository.RefundRepository;
 import com.example.staffbe.service.RefundServiceImpl;
-import com.example.staffbe.enums.RefundStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,7 +15,7 @@ public class RejectRefundStrategy implements ApprovalStrategy {
     private final RefundServiceImpl refundService;
 
 
-    @Autowired
+    
     public RejectRefundStrategy(RefundRepository refundRepository,RefundServiceImpl refundService) {
         this.refundRepository = refundRepository;
         this.refundService = refundService;

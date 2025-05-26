@@ -6,7 +6,6 @@ import com.example.staffbe.enums.RefundStatus;
 import com.example.staffbe.enums.PaymentStatus;
 import com.example.staffbe.repository.RefundRepository;
 import com.example.staffbe.repository.PaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ public class RefundServiceImpl implements RefundService {
     private final RefundRepository refundRepository;
     private final PaymentRepository paymentRepository;
 
-    @Autowired
     public RefundServiceImpl(RefundRepository refundRepository, PaymentRepository paymentRepository) {
         this.refundRepository = refundRepository;
         this.paymentRepository = paymentRepository;

@@ -5,20 +5,19 @@ import com.example.staffbe.enums.PaymentMethod;
 import com.example.staffbe.enums.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 import java.util.List;
 import java.util.UUID; // Pastikan UUID diimpor
-import java.time.LocalDateTime; // Impor LocalDateTime jika belum ada
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class PaymentRepositoryTest {
 
-    @Autowired
+    
     private PaymentRepository paymentRepository;
 
     private Payment testPayment;

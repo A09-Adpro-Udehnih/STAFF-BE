@@ -2,7 +2,7 @@ package com.example.staffbe.strategy;
 
 import com.example.staffbe.model.Refund;
 import com.example.staffbe.repository.RefundRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,7 +12,7 @@ public class GetAllRefundStrategy implements GetAllStrategy<Refund> {
 
     private final RefundRepository refundRepository;
 
-    @Autowired
+    
     public GetAllRefundStrategy(RefundRepository refundRepository) {
         this.refundRepository = refundRepository;
     }

@@ -7,10 +7,9 @@ import com.example.staffbe.model.Payment;
 import com.example.staffbe.model.Refund;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RefundRepositoryTest {
     UUID randomId = UUID.randomUUID();
 
-    @Autowired
+    
     private RefundRepository refundRepository;
 
-    @Autowired
+    
     private PaymentRepository paymentRepository;
 
     private Payment createAndSavePayment() {

@@ -4,7 +4,7 @@ import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.repository.TutorApplicationRepository;
 import com.example.staffbe.service.TutorApplicationServiceImpl;
 import com.example.staffbe.enums.TutorApplicationStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,7 +16,7 @@ public class RejectTutorApplicationStrategy implements ApprovalStrategy {
     private final TutorApplicationServiceImpl tutorApplicationService;
 
 
-    @Autowired
+    
     public RejectTutorApplicationStrategy(TutorApplicationRepository tutorApplicationRepository,TutorApplicationServiceImpl tutorApplicationService) {
         this.tutorApplicationRepository = tutorApplicationRepository;
         this.tutorApplicationService = tutorApplicationService;

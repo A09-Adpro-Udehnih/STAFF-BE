@@ -2,7 +2,6 @@ package com.example.staffbe.service;
 
 import com.example.staffbe.model.User;
 import com.example.staffbe.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.staffbe.enums.Role;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +14,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    @Autowired
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

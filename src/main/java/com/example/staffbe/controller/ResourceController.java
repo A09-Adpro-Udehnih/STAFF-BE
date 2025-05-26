@@ -10,7 +10,6 @@ import com.example.staffbe.model.User;
 import com.example.staffbe.service.ResourceService;
 import com.example.staffbe.service.UserServiceImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +27,6 @@ public class ResourceController {
     private final ResourceService resourceService;
     private final UserServiceImpl userService;
 
-    @Autowired
     public ResourceController(ResourceService resourceService, UserServiceImpl userService) {
         this.resourceService = resourceService;
         this.userService = userService;

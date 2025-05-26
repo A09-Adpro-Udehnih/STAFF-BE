@@ -1,9 +1,6 @@
 package com.example.staffbe.strategy;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.example.staffbe.service.*;
-
 
 
 import java.util.UUID;
@@ -18,7 +15,6 @@ public class ApprovalContext {
     private final ApprovalStrategy approvePaymentStrategy;
     private final ApprovalStrategy rejectPaymentStrategy;
 
-    @Autowired
     public ApprovalContext(
             ApprovalStrategy approveTutorApplicationStrategy,
             ApprovalStrategy rejectTutorApplicationStrategy,

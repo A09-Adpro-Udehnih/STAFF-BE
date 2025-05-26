@@ -5,7 +5,6 @@ import com.example.staffbe.model.User;
 import com.example.staffbe.service.ApprovalService;
 import com.example.staffbe.service.UserServiceImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ public class ApprovalController {
     private final ApprovalService approvalService;
     private final UserServiceImpl userService;
 
-    @Autowired
     public ApprovalController(ApprovalService approvalService, UserServiceImpl userService) {
         this.approvalService = approvalService;
         this.userService = userService;
