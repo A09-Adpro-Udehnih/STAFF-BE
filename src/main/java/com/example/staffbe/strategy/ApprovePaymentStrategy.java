@@ -25,6 +25,10 @@ public class ApprovePaymentStrategy implements ApprovalStrategy {
 
     @Override
     public void approve(UUID paymentId) {
+        if (paymentId == null) {
+            throw new IllegalArgumentException("Payment ID cannot be null");
+        }
+
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 

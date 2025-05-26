@@ -41,14 +41,14 @@ public class RefundServiceTest {
     @BeforeEach
     void setUp() {
         UUID paymentId = UUID.randomUUID();
-        UUID testPaymentUserId = UUID.randomUUID(); // Inisialisasi testPaymentUserId sebagai UUID
+        UUID testPaymentUserId = UUID.randomUUID();
 
         testPayment = Payment.builder()
                 .id(paymentId)
-                .userId(testPaymentUserId) // <-- UBAH DI SINI: Gunakan UUID
-                .amount(100.0) // Pastikan tipe data amount di Payment sesuai (misal double atau BigDecimal)
-                .status(PaymentStatus.PENDING) // Anda menggunakan PENDING di sini
-                .method(PaymentMethod.BANK_TRANSFER) // Tambahkan method jika ini field di Payment Anda
+                .userId(testPaymentUserId)
+                .amount(100.0)
+                .status(PaymentStatus.PENDING)
+                .method(PaymentMethod.BANK_TRANSFER)
                 .paymentReference("ref-123")
                 .createdAt(java.time.LocalDateTime.now())
                 .build();
@@ -56,8 +56,8 @@ public class RefundServiceTest {
         refundId = UUID.randomUUID();
         testRefund = Refund.builder()
                 .id(refundId)
-                .payment(testPayment) // payment yang sudah menggunakan UUID untuk userId
-                .amount(50.0) // Pastikan tipe data amount di Refund sesuai
+                .payment(testPayment)
+                .amount(50.0)
                 .status(RefundStatus.PENDING)
                 .reason("Product refund")
                 .createdAt(java.time.LocalDateTime.now())
@@ -71,10 +71,21 @@ public class RefundServiceTest {
 
         refundService.approveRefund(refundId);
 
-        // Verifikasi status refund telah diperbarui menjadi ACCEPTED
         assertEquals(RefundStatus.ACCEPTED, testRefund.getStatus());
-        // Verifikasi status payment telah diperbarui menjadi PAID
         assertEquals(PaymentStatus.PAID, testPayment.getStatus());
+        verify(refundRepository).save(testRefund);
+    }
+
+    @Test
+    void testApproveRefund_NotFound() {
+        when(refundRepository.findById(refundId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            refundService.approveRefund(refundId);
+        });
+
+        verify(refundRepository, never()).save(any());
+        verify(paymentRepository, never()).save(any());
     }
 
     @Test
@@ -83,8 +94,19 @@ public class RefundServiceTest {
 
         refundService.rejectRefund(refundId);
 
-        // Verifikasi status refund telah diperbarui menjadi REJECTED
         assertEquals(RefundStatus.REJECTED, testRefund.getStatus());
+        verify(refundRepository).save(testRefund);
+    }
+
+    @Test
+    void testRejectRefund_NotFound() {
+        when(refundRepository.findById(refundId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            refundService.rejectRefund(refundId);
+        });
+
+        verify(refundRepository, never()).save(any());
     }
 
     @Test
@@ -99,6 +121,15 @@ public class RefundServiceTest {
     }
 
     @Test
+    void testFindRefundById_NotFound() {
+        when(refundRepository.findById(refundId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            refundService.findRefundById(refundId);
+        });
+    }
+
+    @Test
     void testFindAllRefunds() {
         when(refundRepository.findAll()).thenReturn(List.of(testRefund));
 
@@ -107,5 +138,15 @@ public class RefundServiceTest {
         assertNotNull(refunds);
         assertFalse(refunds.isEmpty());
         assertEquals(testRefund, refunds.get(0));
+    }
+
+    @Test
+    void testFindAllRefunds_Empty() {
+        when(refundRepository.findAll()).thenReturn(List.of());
+
+        List<Refund> refunds = refundService.findAllRefunds();
+
+        assertNotNull(refunds);
+        assertTrue(refunds.isEmpty());
     }
 }

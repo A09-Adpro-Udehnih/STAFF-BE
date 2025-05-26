@@ -3,64 +3,89 @@ package com.example.staffbe.strategy;
 import com.example.staffbe.model.TutorApplication;
 import com.example.staffbe.repository.TutorApplicationRepository;
 import com.example.staffbe.service.TutorApplicationServiceImpl;
-import com.example.staffbe.enums.TutorApplicationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Optional;
 import java.util.UUID;
 
-public class RejectTutorApplicationStrategyTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class RejectTutorApplicationStrategyTest {
 
     @Mock
-    private TutorApplicationRepository tutorApplicationRepository;  // Mocking TutorApplicationRepository
+    private TutorApplicationRepository tutorApplicationRepository;
 
     @Mock
-    private TutorApplicationServiceImpl tutorApplicationService;  // Mocking TutorApplicationServiceImpl
+    private TutorApplicationServiceImpl tutorApplicationService;
 
-    @InjectMocks
-    private RejectTutorApplicationStrategy rejectTutorApplicationStrategy;  // Injecting mocks into RejectTutorApplicationStrategy
-
+    private RejectTutorApplicationStrategy rejectTutorApplicationStrategy;
     private UUID applicationId;
     private TutorApplication mockTutorApplication;
 
     @BeforeEach
     void setUp() {
-        // Initialize mocks
         MockitoAnnotations.openMocks(this);
-
-        applicationId = UUID.randomUUID();  // Simulasi ID tutor application yang akan direject
-        mockTutorApplication = TutorApplication.builder()
-                .id(applicationId)
-                .status(TutorApplicationStatus.PENDING)  // Status sebelum reject
-                .build();
+        rejectTutorApplicationStrategy = new RejectTutorApplicationStrategy(tutorApplicationRepository, tutorApplicationService);
+        applicationId = UUID.randomUUID();
+        mockTutorApplication = new TutorApplication();
+        mockTutorApplication.setId(applicationId);
     }
 
     @Test
     void testRejectTutorApplication() {
-        // Simulasi behavior repository untuk menemukan tutor application
-        when(tutorApplicationRepository.findById(applicationId)).thenReturn(java.util.Optional.of(mockTutorApplication));
+        // Arrange
+        when(tutorApplicationRepository.findById(applicationId)).thenReturn(Optional.of(mockTutorApplication));
+        when(tutorApplicationRepository.save(any(TutorApplication.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Simulasi behavior untuk mengubah status tutor application menjadi DENIED
-        doAnswer(invocation -> {
-            mockTutorApplication.setStatus(TutorApplicationStatus.DENIED);  // Mengubah status tutor application menjadi DENIED
-            return null;
-        }).when(tutorApplicationRepository).save(mockTutorApplication);  // Simulasi pemanggilan save() pada repository
-
-        // Panggil reject untuk tutor application
+        // Act
         rejectTutorApplicationStrategy.reject(applicationId);
 
-        // Verifikasi bahwa status tutor application terupdate menjadi DENIED
-        assertEquals(TutorApplicationStatus.DENIED, mockTutorApplication.getStatus());  // Pastikan statusnya terupdate menjadi DENIED
-
-        // Verifikasi bahwa rejectTutorApplication dipanggil dengan ID yang benar
+        // Assert
+        verify(tutorApplicationRepository, times(1)).findById(applicationId);
         verify(tutorApplicationService, times(1)).rejectApplication(applicationId);
+        verify(tutorApplicationRepository, times(1)).save(any(TutorApplication.class));
+    }
 
-        // Verifikasi bahwa save() dipanggil pada repository untuk menyimpan perubahan status
-        verify(tutorApplicationRepository, times(1)).save(mockTutorApplication);  // Memastikan bahwa save dipanggil sekali
+    @Test
+    void testRejectTutorApplicationNotFound() {
+        // Arrange
+        when(tutorApplicationRepository.findById(applicationId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            rejectTutorApplicationStrategy.reject(applicationId);
+        });
+
+        verify(tutorApplicationRepository, times(1)).findById(applicationId);
+        verify(tutorApplicationService, never()).rejectApplication(any());
+        verify(tutorApplicationRepository, never()).save(any(TutorApplication.class));
+    }
+
+    @Test
+    void testRejectTutorApplicationWithNullId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            rejectTutorApplicationStrategy.reject(null);
+        });
+
+        verify(tutorApplicationRepository, never()).findById(any());
+        verify(tutorApplicationService, never()).rejectApplication(any());
+        verify(tutorApplicationRepository, never()).save(any(TutorApplication.class));
+    }
+
+    @Test
+    void testApproveNotSupported() {
+        // Act & Assert
+        assertThrows(UnsupportedOperationException.class, () -> {
+            rejectTutorApplicationStrategy.approve(applicationId);
+        });
+
+        verify(tutorApplicationRepository, never()).findById(any());
+        verify(tutorApplicationService, never()).rejectApplication(any());
+        verify(tutorApplicationRepository, never()).save(any(TutorApplication.class));
     }
 }

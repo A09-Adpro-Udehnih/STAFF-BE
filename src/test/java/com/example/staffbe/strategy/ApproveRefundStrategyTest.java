@@ -3,65 +3,89 @@ package com.example.staffbe.strategy;
 import com.example.staffbe.model.Refund;
 import com.example.staffbe.repository.RefundRepository;
 import com.example.staffbe.service.RefundServiceImpl;
-import com.example.staffbe.enums.RefundStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Optional;
 import java.util.UUID;
 
-public class ApproveRefundStrategyTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class ApproveRefundStrategyTest {
 
     @Mock
-    private RefundRepository refundRepository;  // Mocking RefundRepository
+    private RefundRepository refundRepository;
 
     @Mock
-    private RefundServiceImpl refundService;  // Mocking RefundServiceImpl
+    private RefundServiceImpl refundService;
 
-    @InjectMocks
-    private ApproveRefundStrategy approveRefundStrategy;  // Injecting mocks into ApproveRefundStrategy
-
+    private ApproveRefundStrategy approveRefundStrategy;
     private UUID refundId;
     private Refund mockRefund;
 
     @BeforeEach
     void setUp() {
-        // Initialize mocks
         MockitoAnnotations.openMocks(this);
-
-        refundId = UUID.randomUUID();  // Simulasi ID refund yang akan diapprove
-        mockRefund = Refund.builder()
-                .id(refundId)
-                .amount(50.0)
-                .status(RefundStatus.PENDING)  // Status sebelum approve
-                .build();
+        approveRefundStrategy = new ApproveRefundStrategy(refundRepository, refundService);
+        refundId = UUID.randomUUID();
+        mockRefund = new Refund();
+        mockRefund.setId(refundId);
     }
 
     @Test
     void testApproveRefund() {
-        // Simulasi behavior repository untuk menemukan refund
-        when(refundRepository.findById(refundId)).thenReturn(java.util.Optional.of(mockRefund));
+        // Arrange
+        when(refundRepository.findById(refundId)).thenReturn(Optional.of(mockRefund));
+        when(refundRepository.save(any(Refund.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Simulasi behavior untuk mengubah status refund ketika approve dipanggil
-        doAnswer(invocation -> {
-            mockRefund.setStatus(RefundStatus.ACCEPTED);  // Mengubah status refund menjadi APPROVED
-            return null;
-        }).when(refundRepository).save(mockRefund);  // Simulasi pemanggilan save() pada repository
-
-        // Panggil approve untuk refund
+        // Act
         approveRefundStrategy.approve(refundId);
 
-        // Verifikasi bahwa status refund terupdate menjadi APPROVED
-        assertEquals(RefundStatus.ACCEPTED, mockRefund.getStatus());  // Memastikan status terupdate menjadi APPROVED
-
-        // Verifikasi bahwa refundService.approveRefund dipanggil dengan ID yang benar
+        // Assert
+        verify(refundRepository, times(1)).findById(refundId);
         verify(refundService, times(1)).approveRefund(refundId);
+        verify(refundRepository, times(1)).save(any(Refund.class));
+    }
 
-        // Verifikasi bahwa save() dipanggil pada repository untuk menyimpan perubahan status
-        verify(refundRepository, times(1)).save(mockRefund);  // Memastikan bahwa save dipanggil sekali
+    @Test
+    void testApproveRefundNotFound() {
+        // Arrange
+        when(refundRepository.findById(refundId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            approveRefundStrategy.approve(refundId);
+        });
+
+        verify(refundRepository, times(1)).findById(refundId);
+        verify(refundService, never()).approveRefund(any());
+        verify(refundRepository, never()).save(any(Refund.class));
+    }
+
+    @Test
+    void testApproveRefundWithNullId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approveRefundStrategy.approve(null);
+        });
+
+        verify(refundRepository, never()).findById(any());
+        verify(refundService, never()).approveRefund(any());
+        verify(refundRepository, never()).save(any(Refund.class));
+    }
+
+    @Test
+    void testRejectNotSupported() {
+        // Act & Assert
+        assertThrows(UnsupportedOperationException.class, () -> {
+            approveRefundStrategy.reject(refundId);
+        });
+
+        verify(refundRepository, never()).findById(any());
+        verify(refundService, never()).approveRefund(any());
+        verify(refundRepository, never()).save(any(Refund.class));
     }
 }

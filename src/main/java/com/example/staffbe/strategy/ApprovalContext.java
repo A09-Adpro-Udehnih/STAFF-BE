@@ -2,7 +2,6 @@ package com.example.staffbe.strategy;
 
 import org.springframework.stereotype.Component;
 
-
 import java.util.UUID;
 
 @Component
@@ -30,10 +29,17 @@ public class ApprovalContext {
         this.rejectPaymentStrategy = rejectPaymentStrategy;
     }
 
-    // Method untuk approve, memilih strategi berdasarkan tipe
     public void approve(UUID id, String type) {
-        switch (type) {
-            case "tutorApplication":
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null");
+        }
+
+        switch (type.toLowerCase()) {
+            case "tutor":
+            case "tutorapplication":
                 approveTutorApplicationStrategy.approve(id);
                 break;
             case "refund":
@@ -43,14 +49,21 @@ public class ApprovalContext {
                 approvePaymentStrategy.approve(id);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid type");
+                throw new IllegalArgumentException("Invalid type: " + type);
         }
     }
 
-    // Method untuk reject, memilih strategi berdasarkan tipe
     public void reject(UUID id, String type) {
-        switch (type) {
-            case "tutorApplication":
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null");
+        }
+
+        switch (type.toLowerCase()) {
+            case "tutor":
+            case "tutorapplication":
                 rejectTutorApplicationStrategy.reject(id);
                 break;
             case "refund":
@@ -60,7 +73,7 @@ public class ApprovalContext {
                 rejectPaymentStrategy.reject(id);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid type");
+                throw new IllegalArgumentException("Invalid type: " + type);
         }
     }
 }

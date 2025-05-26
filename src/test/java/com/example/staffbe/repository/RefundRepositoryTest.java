@@ -5,9 +5,10 @@ import com.example.staffbe.enums.PaymentStatus;
 import com.example.staffbe.enums.RefundStatus;
 import com.example.staffbe.model.Payment;
 import com.example.staffbe.model.Refund;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
@@ -19,17 +20,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class RefundRepositoryTest {
-    UUID randomId = UUID.randomUUID();
 
-    
+    @Autowired
     private RefundRepository refundRepository;
 
-    
+    @Autowired
     private PaymentRepository paymentRepository;
+
+    private UUID randomId;
+
+    @BeforeEach
+    void setUp() {
+        randomId = UUID.randomUUID();
+    }
 
     private Payment createAndSavePayment() {
         Payment payment = Payment.builder()
-                .userId(randomId) // Gunakan UUID untuk userId
+                .userId(randomId)
                 .amount(250.00)
                 .method(PaymentMethod.BANK_TRANSFER)
                 .status(PaymentStatus.PAID)

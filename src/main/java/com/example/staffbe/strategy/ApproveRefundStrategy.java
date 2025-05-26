@@ -24,11 +24,15 @@ public class ApproveRefundStrategy implements ApprovalStrategy {
 
     @Override
     public void approve(UUID refundId) {
+        if (refundId == null) {
+            throw new IllegalArgumentException("Refund ID cannot be null");
+        }
+
         Refund refund = refundRepository.findById(refundId)
                 .orElseThrow(() -> new RuntimeException("Refund not found"));
 
-        refundService.approveRefund(refundId); // BAGIAN INI HARUS DIUBAH MENJADI refund.approveRefund(refundId) UNTUK MENYESUAIKAN DENGAN REFUND SERVICE IMPL
-        refundRepository.save(refund);  
+        refundService.approveRefund(refundId);
+        refundRepository.save(refund);
     }
     
 

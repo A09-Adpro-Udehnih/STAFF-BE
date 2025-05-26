@@ -29,6 +29,10 @@ public class RejectTutorApplicationStrategy implements ApprovalStrategy {
 
     @Override
     public void reject(UUID applicationId) {
+        if (applicationId == null) {
+            throw new IllegalArgumentException("Application ID cannot be null");
+        }
+
         TutorApplication tutorApplication = tutorApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Tutor application not found"));
 

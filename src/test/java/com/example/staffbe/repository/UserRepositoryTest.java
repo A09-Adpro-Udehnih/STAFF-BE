@@ -3,7 +3,7 @@ package com.example.staffbe.repository;
 import com.example.staffbe.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import com.example.staffbe.enums.Role;
 
@@ -12,10 +12,10 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest // Anotasi ini untuk pengujian repository dengan Spring Data JPA
+@DataJpaTest
 public class UserRepositoryTest {
 
-    
+    @Autowired
     private UserRepository userRepository;
 
     private User testUser;
@@ -27,7 +27,7 @@ public class UserRepositoryTest {
                 .email("test@example.com")
                 .fullName("Test User")
                 .password("password123")
-                .role(Role.STAFF)  // Set role sesuai enum yang ada
+                .role(Role.STAFF)
                 .build();
         
         // Simpan user di database untuk pengujian

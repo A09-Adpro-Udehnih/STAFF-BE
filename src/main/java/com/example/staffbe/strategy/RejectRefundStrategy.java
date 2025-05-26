@@ -28,10 +28,14 @@ public class RejectRefundStrategy implements ApprovalStrategy {
 
     @Override
     public void reject(UUID refundId) {
+        if (refundId == null) {
+            throw new IllegalArgumentException("Refund ID cannot be null");
+        }
+
         Refund refund = refundRepository.findById(refundId)
                 .orElseThrow(() -> new RuntimeException("Refund not found"));
 
-        refundService.rejectRefund(refundId); // BAGIAN INI HARUS DIUBAH MENJADI refund.approveRefund(refundId) UNTUK MENYESUAIKAN DENGAN REFUND SERVICE IMPL
-        refundRepository.save(refund);  
+        refundService.rejectRefund(refundId);
+        refundRepository.save(refund);
     }
 }

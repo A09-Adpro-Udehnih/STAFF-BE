@@ -4,7 +4,6 @@ import com.example.staffbe.model.Payment;
 import com.example.staffbe.repository.PaymentRepository;
 import com.example.staffbe.enums.PaymentStatus;
 
-
 import org.springframework.stereotype.Component;
 
 import com.example.staffbe.service.PaymentServiceImpl;
@@ -25,6 +24,10 @@ public class RejectPaymentStrategy implements ApprovalStrategy {
 
     @Override
     public void reject(UUID paymentId) {
+        if (paymentId == null) {
+            throw new IllegalArgumentException("Payment ID cannot be null");
+        }
+
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 

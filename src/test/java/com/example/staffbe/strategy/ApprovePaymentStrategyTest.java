@@ -2,66 +2,92 @@ package com.example.staffbe.strategy;
 
 import com.example.staffbe.model.Payment;
 import com.example.staffbe.repository.PaymentRepository;
-import com.example.staffbe.service.PaymentServiceImpl;
 import com.example.staffbe.enums.PaymentStatus;
+import com.example.staffbe.service.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Optional;
 import java.util.UUID;
 
-public class ApprovePaymentStrategyTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class ApprovePaymentStrategyTest {
 
     @Mock
-    private PaymentRepository paymentRepository;  // Mocking PaymentRepository
+    private PaymentRepository paymentRepository;
 
     @Mock
-    private PaymentServiceImpl paymentService;  // Mocking PaymentServiceImpl
+    private PaymentServiceImpl paymentService;
 
-    @InjectMocks
-    private ApprovePaymentStrategy approvePaymentStrategy;  // Injecting mocks into ApprovePaymentStrategy
-
+    private ApprovePaymentStrategy approvePaymentStrategy;
     private UUID paymentId;
     private Payment mockPayment;
 
     @BeforeEach
     void setUp() {
-        // Initialize mocks
         MockitoAnnotations.openMocks(this);
-
-        paymentId = UUID.randomUUID();  // Simulasi ID payment yang akan diapprove
-        mockPayment = Payment.builder()
-                .id(paymentId)
-                .amount(100.0)
-                .status(PaymentStatus.PENDING)  // Status sebelum approve
-                .build();
+        approvePaymentStrategy = new ApprovePaymentStrategy(paymentRepository, paymentService);
+        paymentId = UUID.randomUUID();
+        mockPayment = new Payment();
+        mockPayment.setId(paymentId);
+        mockPayment.setStatus(PaymentStatus.PENDING);
     }
 
     @Test
     void testApprovePayment() {
-        // Simulasi behavior repository untuk menemukan payment
-        when(paymentRepository.findById(paymentId)).thenReturn(java.util.Optional.of(mockPayment));
+        // Arrange
+        when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(mockPayment));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Simulasi behavior untuk mengubah status payment ketika approve dipanggil
-        doAnswer(invocation -> {
-            mockPayment.setStatus(PaymentStatus.PAID);  // Mengubah status payment menjadi PAID
-            return null;
-        }).when(paymentRepository).save(mockPayment);  // Simulasi pemanggilan save() pada repository
-
-        // Panggil approve untuk payment
+        // Act
         approvePaymentStrategy.approve(paymentId);
 
-        // Verifikasi bahwa status payment terupdate menjadi PAID
-        assertEquals(PaymentStatus.PAID, mockPayment.getStatus());  // Pastikan statusnya terupdate menjadi PAID
-
-        // Verifikasi bahwa approvePayment dipanggil dengan ID yang benar
+        // Assert
+        verify(paymentRepository, times(1)).findById(paymentId);
         verify(paymentService, times(1)).updatePaymentStatus(paymentId, PaymentStatus.PAID);
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
 
-        // Verifikasi bahwa save() dipanggil pada repository untuk menyimpan perubahan status
-        verify(paymentRepository, times(1)).save(mockPayment);  // Memastikan bahwa save dipanggil sekali
+    @Test
+    void testApprovePaymentNotFound() {
+        // Arrange
+        when(paymentRepository.findById(paymentId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            approvePaymentStrategy.approve(paymentId);
+        });
+
+        verify(paymentRepository, times(1)).findById(paymentId);
+        verify(paymentService, never()).updatePaymentStatus(any(), any());
+        verify(paymentRepository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    void testApprovePaymentWithNullId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            approvePaymentStrategy.approve(null);
+        });
+
+        verify(paymentRepository, never()).findById(any());
+        verify(paymentService, never()).updatePaymentStatus(any(), any());
+        verify(paymentRepository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    void testRejectNotSupported() {
+        // Act & Assert
+        assertThrows(UnsupportedOperationException.class, () -> {
+            approvePaymentStrategy.reject(paymentId);
+        });
+
+        verify(paymentRepository, never()).findById(any());
+        verify(paymentService, never()).updatePaymentStatus(any(), any());
+        verify(paymentRepository, never()).save(any(Payment.class));
     }
 }

@@ -68,8 +68,10 @@ public class ResourceControllerTest {
         when(resourceService.getAllPaymentsAsync()).thenReturn(CompletableFuture.completedFuture(mockPayments));
         when(resourceService.getAllTutorApplicationsAsync()).thenReturn(CompletableFuture.completedFuture(mockTutors));
 
-        ResponseEntity<GlobalResponse<StaffDashboardResponse>> responseEntity =
-                resourceController.getDashboardData(principal).get();
+        CompletableFuture<ResponseEntity<GlobalResponse<StaffDashboardResponse>>> future = 
+            resourceController.getDashboardData(principal);
+        
+        ResponseEntity<GlobalResponse<StaffDashboardResponse>> responseEntity = future.get();
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
@@ -104,7 +106,8 @@ public class ResourceControllerTest {
 
         ResponseEntity<GlobalResponse<StaffDashboardResponse>> response = future.get();
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Only STAFF can access the dashboard", response.getBody().getMessage());
+        assertNotNull(response.getBody());
+        assertEquals("Access denied. Only STAFF users can access dashboard.", response.getBody().getMessage());
 
         verify(resourceService, never()).getAllRefundsAsync();
     }
@@ -118,7 +121,8 @@ public class ResourceControllerTest {
 
         ResponseEntity<GlobalResponse<StaffDashboardResponse>> response = future.get();
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Only STAFF can access the dashboard", response.getBody().getMessage());
+        assertNotNull(response.getBody());
+        assertEquals("Access denied. Only STAFF users can access dashboard.", response.getBody().getMessage());
 
         verify(resourceService, never()).getAllTutorApplicationsAsync();
     }

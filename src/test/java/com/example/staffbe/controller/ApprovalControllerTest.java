@@ -6,11 +6,12 @@ import com.example.staffbe.service.ApprovalService;
 import com.example.staffbe.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
 import java.util.Optional;
@@ -20,12 +21,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ApprovalController.class)
-@Import(TestSecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 public class ApprovalControllerTest {
-
-    
-    private MockMvc mockMvc;
 
     @Mock
     private ApprovalService approvalService;
@@ -33,17 +30,20 @@ public class ApprovalControllerTest {
     @Mock
     private UserServiceImpl userService;
 
+    @InjectMocks
+    private ApprovalController approvalController;
+
+    private MockMvc mockMvc;
     private UUID id;
     private UUID userId;
+    private Principal principal;
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(approvalController).build();
         id = UUID.randomUUID();
         userId = UUID.randomUUID();
-    }
-
-    private Principal mockPrincipal() {
-        return () -> userId.toString();
+        principal = () -> userId.toString();
     }
 
     @Test
@@ -52,7 +52,7 @@ public class ApprovalControllerTest {
         when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         mockMvc.perform(post("/approval/approve/tutor/{id}", id)
-                        .principal(mockPrincipal()))
+                        .principal(principal))
                 .andExpect(status().isOk());
 
         verify(approvalService, times(1)).approve(id, "tutor");
@@ -64,7 +64,7 @@ public class ApprovalControllerTest {
         when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         mockMvc.perform(post("/approval/reject/refund/{id}", id)
-                        .principal(mockPrincipal()))
+                        .principal(principal))
                 .andExpect(status().isOk());
 
         verify(approvalService, times(1)).reject(id, "refund");
@@ -76,7 +76,7 @@ public class ApprovalControllerTest {
         when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         mockMvc.perform(post("/approval/approve/tutor/{id}", id)
-                        .principal(mockPrincipal()))
+                        .principal(principal))
                 .andExpect(status().isForbidden());
 
         verify(approvalService, never()).approve(any(), any());
@@ -88,7 +88,7 @@ public class ApprovalControllerTest {
         when(userService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         mockMvc.perform(post("/approval/reject/refund/{id}", id)
-                        .principal(mockPrincipal()))
+                        .principal(principal))
                 .andExpect(status().isForbidden());
 
         verify(approvalService, never()).reject(any(), any());
@@ -102,7 +102,7 @@ public class ApprovalControllerTest {
                 .when(approvalService).approve(id, "tutor");
 
         mockMvc.perform(post("/approval/approve/tutor/{id}", id)
-                        .principal(mockPrincipal()))
+                        .principal(principal))
                 .andExpect(status().isNotFound());
     }
 
@@ -114,7 +114,7 @@ public class ApprovalControllerTest {
                 .when(approvalService).reject(id, "refund");
 
         mockMvc.perform(post("/approval/reject/refund/{id}", id)
-                        .principal(mockPrincipal()))
+                        .principal(principal))
                 .andExpect(status().isNotFound());
     }
 }
